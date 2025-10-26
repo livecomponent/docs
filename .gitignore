@@ -14,6 +14,5 @@ app/components/file_browser.rb
 app/components/color_mode_toggle.rb
 app/components/code_block.rb
 app/components/footer_nav.rb
-app/components/h2.rb
 app/components/heading.rb
 ##### END ONLOAD BUILD ARTIFACTS #####
