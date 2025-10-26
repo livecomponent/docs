@@ -29,6 +29,10 @@ jobs:
 
       # Build with Parklife and use its GitHub Pages URL (either its custom
       # domain or username.github.io/repository).
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      with:
+        limit-access-to-actor: true
     - name: Build
       run: bin/static-build --base "${{ steps.pages.outputs.base_url }}"
 
