@@ -1,26 +1,3 @@
-PATH
-  remote: ../onload
-  specs:
-    onload (1.1.0)
-
-PATH
-  remote: ../rux-rails
-  specs:
-    rux-rails (1.5.0)
-      onload (~> 1.1)
-      railties (>= 5.0)
-      rux (~> 1.2)
-      use_context (~> 1.2)
-      view_component (>= 2, < 5)
-
-PATH
-  remote: ../rux
-  specs:
-    rux (1.2.0)
-      onload (~> 1.1)
-      parser (~> 3.0)
-      unparser (~> 0.8)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -100,8 +77,8 @@ GEM
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt_pbkdf (1.1.1)
-    benchmark (0.4.1)
-    bigdecimal (3.2.3)
+    benchmark (0.5.0)
+    bigdecimal (3.3.1)
     bindex (0.8.1)
     bootsnap (1.18.6)
       msgpack (~> 1.2)
@@ -130,7 +107,7 @@ GEM
     drb (2.2.3)
     dry-cli (1.3.0)
     ed25519 (1.4.0)
-    erb (5.0.2)
+    erb (5.1.1)
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
@@ -179,7 +156,7 @@ GEM
     marcel (1.1.0)
     matrix (0.4.3)
     mini_mime (1.1.5)
-    minitest (5.25.5)
+    minitest (5.26.0)
     msgpack (1.8.0)
     mutex_m (0.3.0)
     net-imap (0.5.11)
@@ -212,6 +189,7 @@ GEM
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
     octicons (19.18.0)
+    onload (1.1.0)
     ostruct (0.6.3)
     parallel (1.27.0)
     parklife (0.8.0)
@@ -224,7 +202,7 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
-    pp (0.6.2)
+    pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
     primer_view_components (0.44.1)
@@ -245,7 +223,7 @@ GEM
       nio4r (~> 2.0)
     raabro (1.4.0)
     racc (1.8.1)
-    rack (3.2.1)
+    rack (3.2.3)
     rack-proxy (0.7.7)
       rack
     rack-session (2.1.1)
@@ -287,9 +265,10 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.0)
-    rdoc (6.14.2)
+    rdoc (6.15.0)
       erb
       psych (>= 4.0.0)
+      tsort
     regexp_parser (2.11.3)
     reline (0.6.2)
       io-console (~> 0.5)
@@ -325,6 +304,16 @@ GEM
       rubocop-rails (>= 2.30)
     ruby-progressbar (1.13.0)
     rubyzip (3.1.1)
+    rux (1.3.0)
+      onload (~> 1.1)
+      parser (~> 3.0)
+      unparser (~> 0.8)
+    rux-rails (2.0.1)
+      onload (~> 1.1)
+      railties (>= 5.0)
+      rux (~> 1.3)
+      use_context (~> 1.2)
+      view_component (>= 2, < 5)
     securerandom (0.4.1)
     selenium-webdriver (4.36.0)
       base64 (~> 0.2)
@@ -386,11 +375,11 @@ GEM
       diff-lcs (~> 1.6)
       parser (>= 3.3.0)
       prism (>= 1.4)
-    uri (1.0.3)
+    uri (1.0.4)
     use_context (1.2.0)
     useragent (0.16.11)
-    view_component (4.0.2)
-      activesupport (>= 7.1.0, < 8.1)
+    view_component (4.1.0)
+      activesupport (>= 7.1.0, < 8.2)
       concurrent-ruby (~> 1)
     vite_rails (3.0.19)
       railties (>= 5.1, < 9)
@@ -435,7 +424,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
-  onload!
+  onload (~> 1.1)
   parklife-rails
   primer_view_components (~> 0.44)
   propshaft
@@ -443,8 +432,8 @@ DEPENDENCIES
   rails (~> 8.0.3)
   rouge (~> 4.6)
   rubocop-rails-omakase
-  rux!
-  rux-rails!
+  rux (~> 1.3)
+  rux-rails (~> 2.0)
   selenium-webdriver
   solid_cable
   solid_cache

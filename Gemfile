@@ -64,9 +64,9 @@ end
 
 gem "csv"
 
-gem "rux", path: "~/workspace/camertron/rux"
-gem "rux-rails", path: "~/workspace/camertron/rux-rails"
-gem "onload", path: "~/workspace/camertron/onload"
+gem "rux", "~> 1.3"
+gem "rux-rails", "~> 2.0"
+gem "onload", "~> 1.1"
 gem "vite_rails", "~> 3.0"
 gem "primer_view_components", "~> 0.44"
 gem "rouge", "~> 4.6"

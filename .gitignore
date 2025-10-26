@@ -4,6 +4,8 @@ public/assets
 public/vite
 public/vite-dev
 build/
+storage/
+log/
 
 ##### ONLOAD BUILD ARTIFACTS (AUTO-GENERATED) #####
 app/components/card.rb

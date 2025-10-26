@@ -24,10 +24,13 @@ jobs:
         cache-dependency-path: package-lock.json
     - uses: actions/configure-pages@v5
       id: pages
+    - name: Rux Transpile
+      run: bin/rails rux:transpile
 
       # Build with Parklife and use its GitHub Pages URL (either its custom
       # domain or username.github.io/repository).
-    - run: bin/static-build --base "${{ steps.pages.outputs.base_url }}"
+    - name: Build
+      run: bin/static-build --base "${{ steps.pages.outputs.base_url }}"
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3

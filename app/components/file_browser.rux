@@ -67,7 +67,7 @@ class FileBrowser < ApplicationComponent
             classes="FileBrowser-NavPane border-right border-color-default pl-3 pr-2 pt-2 pb-2"
             data={{ target: "file-browser.navPane" }}
           >
-            <Component instance={@tree_view} />
+            <Rux::Component instance={@tree_view} />
           </Primer::Alpha::Stack>
           <Primer::Alpha::Stack
             classes="FileBrowser-CodeExplorerPane pt-2 pb-2 pr-3 pl-3"
