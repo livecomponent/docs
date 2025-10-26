@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+class Heading < ApplicationComponent
+  def initialize(**system_arguments)
+    @system_arguments = system_arguments
+  end
+
+  def call
+    <Primer::Beta::Text tag={tag} id={slug} color={:default} {**@system_arguments}>
+      <Primer::Alpha::Stack direction={:horizontal} align={:center} gap={:condensed}>
+        {rendered_content}
+        <Primer::Beta::Link href={"##{slug}"} display={:flex}>
+          <Primer::Beta::IconButton
+            icon={:link}
+            color={:default}
+            scheme={:invisible}
+            aria={{ label: "Link to heading" }}
+            mt={1}
+          />
+        </Primer::Beta::Link>
+      </Primer::Alpha::Stack>
+    </Primer::Beta::Text>
+  end
+
+  private
+
+  def slug
+    @slug ||= content.gsub(/[^a-zA-Z0-9_-]/, "-").downcase
+  end
+
+  def rendered_content
+    content
+      .gsub(/`([^`]+)`/) do
+        Code.new.with_content($1).render_in(view_context)
+      end
+      .html_safe
+  end
+end

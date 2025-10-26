@@ -1,0 +1,139 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>Removing Todos</H1>
+    <hr/>
+  </div>
+  <Primer::Alpha::Banner>
+    <Primer::Beta::Text font-size={4}>
+      {"This page is part of a series that describes building a complete todo list application with LiveComponent. Please consider reading it from "}
+      <a href={your_first_component_path}>the beginning</a>
+      {"."}
+    </Primer::Beta::Text>
+  </Primer::Alpha::Banner>
+  <Para>
+    {"What CRUD example would be complete without the \"delete\" part? In this section, we focus on deleting todo items using LiveComponent."}
+  </Para>
+  <H2>Adding a Delete Button</H2>
+  <Para>
+    {"The first step in deleting todo items is to add a delete button. Typically in Rails this is done using `button_to` with a delete method."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <% if @editing %>
+            <%= form_with(model: @todo_item) do |f| %>
+              <%= f.text_field :text %>
+              <%= f.submit %>
+            <% end %>
+          <% else %>
+            <%= @todo_item.text %>
+            <%= button_tag(
+              "Edit",
+              data: { action: "click->todoitemcomponent#edit" }
+            ) %>
+            <%= button_to(
+              "Delete",
+              todo_list_todo_item_path(@todo_item.todo_list_id, @todo_item),
+              rerender: :parent,
+              method: :delete,
+              form: {
+                data: {
+                  turbo: true,
+                  turbo_stream: true
+                }
+              }
+            ) %>
+          <% end %>
+        </div>
+      ERB
+    }
+  />
+  <H2>The `destroy` action</H2>
+  <Para>
+    {"When the delete button gets clicked, Rails will call the `destroy` action, which deletes the record from the database (note that the other actions we wrote earlier have been omitted for brevity)."}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemsController < ApplicationController
+          def destroy
+            TodoItem.delete(params[:id])
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Finally, we need to rerender the todo list excluding the deleted item. Since items are managed via ViewComponent slots, we can iterate through them and remove the item with the matching ID:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= live.rerender do |todo_list_component| %>
+          <% todo_list_component.todo_items.reject! do |todo_item_component| %>
+            <% todo_item_component.todo_item.id == params[:id].to_i %>
+          <% end %>
+        <% end %>
+      ERB
+    }
+  />
+  <H2>Preventing N + 1 Queries</H2>
+  <Para>
+    {"Behind the scenes, LiveComponent serializes the todo list and todo item ActiveRecord objects so they can be sent to the front-end. By default and to save space, none of the record's attributes are included. When the component's state is sent back to the server for rerender, any ActiveRecord objects are converted into instances of `LiveComponent::RecordProxy`, a wrapper class that automatically fetches the corresponding record from the database whenever any attribute method is called."}
+  </Para>
+  <Para>
+    {"In the case above where we're re-rendering the entire todo list (as opposed to a single todo item), this behavior can result in making a database query "}
+    <em>per item</em>
+    {", which can be quite inefficient."}
+  </Para>
+  <Para>
+    {"To prevent LiveComponent from unnecessarily fetching records, consider including the fields your component needs to render in the list of serialized attributes:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          serializes :todo_item, with: :model_serializer, attributes: [:text, :todo_list_id]
+
+          attr_reader :todo_item, :editing
+
+          def initialize(todo_item:, editing: false)
+            @todo_item = todo_item
+            @editing = editing
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"By including the `text` and `todo_list_id` attributes in the list of serialized attributes, calling eg. `todo_item.text` will use the existing attribute value and avoid loading the item from the database."}
+  </Para>
+  <H2>Other Techniques</H2>
+  <Para>
+    {"LiveComponent fully supports ActiveRecord objects, but in many cases it can be less error-prone to only pass the data to a component that it actually needs to render. In other words, it's probably a good idea to avoid passing ActiveRecord objects into your components, and instead pass individual attributes or an attributes hash."}
+  </Para>
+  <Para>
+    {"For example, here's how we might render our todo list in app/views/todo_lists/show.html.erb:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= render(TodoListComponent.new(todo_list: @todo_list.attributes)) do |todo_list_component| %>
+          <% @todo_list.todo_items.each do |todo_item| %>
+            <% todo_list_component.with_todo_item(todo_item: todo_item.attributes) %>
+          <% end %>
+        <% end %>
+      ERB
+    }
+  />
+  <FooterNav>
+    <WithForwardLink href={putting_it_all_together_path} label="Putting it all Together" />
+    <WithBackwardLink href={adding_new_todos_path} label="Adding New Todos" />
+  </FooterNav>
+</Primer::Alpha::Stack>

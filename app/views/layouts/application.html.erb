@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Live Component Docs" %></title>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+
+    <%= vite_client_tag %>
+    <%= vite_typescript_tag "application" %>
+  </head>
+
+  <body data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
+    <div class="border-bottom color-border-default">
+      <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, classes: "container-xl", style: "height: 75px")) do %>
+        <%= render(Logo.new(style: "width: 250px")) %>
+        <%= render(ColorModeToggle.new) %>
+      <% end %>
+    </div>
+    <%= render(Primer::Alpha::Layout.new(classes: "container-xl mt-3")) do |layout| %>
+      <% layout.with_sidebar do %>
+        <%= render(Primer::Beta::NavList.new(ml: 6, mt: 2, aria: { label: "Navigation list" }, selected_item_id: @nav_selected_item_id)) do |nav_list| %>
+          <% nav_list.with_item(href: root_path, label: "Overview", selected_by_ids: [:overview]) %>
+          <% nav_list.with_item(href: getting_started_path, label: "Getting Started", selected_by_ids: [:getting_started]) %>
+          <% nav_list.with_item(label: "Todo List App", expanded: true) do |item| %>
+            <% item.with_item(href: your_first_component_path, label: "Your First Component", selected_by_ids: [:your_first_component]) %>
+            <% item.with_item(href: live_component_and_hotwire_path, label: "LiveComponent and Hotwire", selected_by_ids: [:live_component_and_hotwire]) %>
+            <% item.with_item(href: adding_new_todos_path, label: "Adding New Todos", selected_by_ids: [:adding_new_todos]) %>
+            <% item.with_item(href: removing_todos_path, label: "Removing Todos", selected_by_ids: [:removing_todos]) %>
+            <% item.with_item(href: putting_it_all_together_path, label: "Putting it all Together", selected_by_ids: [:putting_it_all_together]) %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% layout.with_main do %>
+        <%= yield %>
+      <% end %>
+    <% end %>
+    <div class="Footer border-top color-border-default">
+      <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, classes: "container-xl", style: "height: 200px")) do %>
+        <%= render(Primer::Alpha::Stack.new(gap: :condensed)) do %>
+          <%= render(LogoType.new(width: "200px")) %>
+          <span>© 2025 Cameron C. Dutro</span>
+        <% end %>
+        <%= render(Primer::Alpha::Stack.new(direction: :horizontal, align: :center)) do %>
+          <a href="https://twitter.com/camertron" target="_blank">
+            <%= render(TwitterLogo.new(width: "32px")) %>
+          </a>
+          <a href="https://ruby.social/@camertron" target="_blank">
+            <%= render(MastodonLogo.new(width: "30px")) %>
+          </a>
+          <a href="https://bsky.app/profile/camertron.bsky.social" target="_blank">
+            <%= render(BlueskyLogo.new(width: "32px")) %>
+          </a>
+          <a href="https://www.linkedin.com/in/camerondutro/" target="_blank">
+            <%= render(LinkedinLogo.new(width: "32px")) %>
+          </a>
+        <% end %>
+      <% end %>
+    </div>
+  </body>
+</html>

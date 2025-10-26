@@ -1,0 +1,187 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>Your First Component</H1>
+    <hr />
+  </div>
+  <Para>
+    {"Adding live behavior to a new or existing component consists of two steps: including a Ruby module and defining a controller in JavaScript."}
+  </Para>
+  <H2>Todo Item Example</H2>
+  <Para>
+    {"For this section of the documentation, we're going to create a component that represents a single item in a todo list. In the next section, we'll build out an entire todo list application; for now though, let's focus on something small."}
+  </Para>
+  <H2>The Ruby</H2>
+  <Para>
+    {"The first step in the process is to define a regular 'ol view component to represent our todo item in app/components/todo_item_component.rb"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          def initialize(todo_item:)
+            @todo_item = todo_item
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"This component accepts a single argument, `todo_item`, which is an instance of a `TodoItem` database model. We're not showing the model itself in this example, but it's a standard ActiveRecord model with a single `text` field."}
+  </Para>
+  <Para>
+    {"Here's the template for our component, app/components/todo_item_component.html.erb, which displays the item's text and an 'Edit' button. Right now, the button doesn't do anything - we'll hook up click behavior in a subsequent step."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <%= @todo_item.text %>
+          <%= button_tag("Edit") %>
+        </div>
+      ERB
+    }
+  />
+  <H2>Adding Live Behavior</H2>
+  <Para>
+    {"Let's turn our new component into a \"live\" component. To do so, include the `LiveComponent::Base` module:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          include LiveComponent::Base  # <-- add this line
+
+          def initialize(todo_item:)
+            @todo_item = todo_item
+          end
+        end
+      RUBY
+    }
+  />
+  <H2>The JavaScript</H2>
+  <Para>
+    {"Now that the server-side component is ready, we can define the client-side controller. LiveComponents are built on Stimulus, Rails' built-in JavaScript framework, and are defined in a similar fasion to normal Stimulus controllers."}
+  </Para>
+  <Para>
+    {"LiveComponent requires that component JavaScript live in a \"sidecar\" file next to the component's Ruby and template files. Doing so ensures LiveComponent discovers your component's JavaScript and renders the appropriate web component wrapper. For this example, let's create app/components/todo_item_component.ts with the following contents. (NOTE: we're using TypeScript here because plain JavaScript does not support decorators, eg `@live`)."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("TodoItemComponent") // this is the Ruby class name
+        export class TodoItemComponent extends LiveController {
+          // nothing in here yet
+        }
+      TYPESCRIPT
+    }
+  />
+  <H2>Adding Some Interactivity</H2>
+  <Para>
+    {"Although we don't have a way of saving the changes yet, let's make the \"Edit\" button show a text field so the item's text can be updated."}
+  </Para>
+  <Para>
+    {"First, modify the component's Ruby code to accept an `editing` boolean argument:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          def initialize(todo_item:, editing: false)
+            @todo_item = todo_item
+            @editing = editing
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Next, update the component's template to render the text field in edit mode:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <% if @editing %>
+            <%= form_with(model: @todo_item) do |f| %>
+              <%= f.text_field :text %>
+            <% end %>
+          <% else %>
+            <%= @todo_item.text %>
+            <%= button_tag("Edit") %>
+          <% end %>
+        </div>
+      ERB
+    }
+  />
+  <Para>
+    {"Let's wire up the button's click event to our Stimulus controller using a Stimulus action attribute. If you're not familar with Stimulus actions, take a look at the "}
+    <a href="https://stimulus.hotwired.dev/reference/actions" target="_blank">documentation</a>
+    {"."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <% if @editing %>
+            <%= form_with(model: @todo_item) do |f| %>
+              <%= f.text_field :text %>
+              <%= f.submit %>
+            <% end %>
+          <% else %>
+            <%= @todo_item.text %>
+            <%= button_tag(
+              "Edit",
+              data: { target: "click->todoitemcomponent#edit" }
+            ) %>
+          <% end %>
+        </div>
+      ERB
+    }
+  />
+  <Para>
+    {"Now when the button gets clicked, Stimulus will call the `edit()` method on our controller."}
+  </Para>
+  <Para>
+    {"Finally, let's update our controller to re-render the component in edit mode when the button gets clicked:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("TodoItemComponent") // this is the Ruby class name
+        export class TodoItemComponent extends LiveController {
+          edit() {
+            this.render((component) => {
+              component.props.editing = true;
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"When the button gets clicked, LiveComponent makes an HTTP request to your Rails app, which renders the `TodoItemComponent` using the new edit mode. Rails in turn responds with a chunk of updated HTML. On the front-end, LiveComponent morphs the new HTML onto the page, and the update is complete."}
+  </Para>
+  <H2>Putting it all Together</H2>
+  <Para>
+    {"A finished version of the todo item example can be seen below."}
+  </Para>
+  <FileBrowser
+    package={ExampleOne.instance}
+    current-path={["app", "components", "todo_item_component.rb"]}
+  />
+  <FooterNav>
+    <WithForwardLink href={live_component_and_hotwire_path} label="LiveComponent and Hotwire" />
+    <WithBackwardLink href={your_first_component_path} label="Your First Component" />
+  </FooterNav>
+</Primer::Alpha::Stack>

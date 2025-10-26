@@ -1,0 +1,81 @@
+<>
+  <Primer::BaseComponent tag={:img} border-radius={3} mt={2} src={image_path("hero.svg")} />
+  <Card>
+    <WithBody>
+      <Primer::Alpha::Stack tag={:p} font-size={3} align={:center} justify={:center}>
+        <span>LiveComponent is a <Primer::BaseComponent tag={:span} color={:severe}>client-side rendering</Primer::BaseComponent> and <Primer::BaseComponent tag={:span} color={:severe}>state management</Primer::BaseComponent> library for ViewComponent.</span>
+      </Primer::Alpha::Stack>
+    </WithBody>
+  </Card>
+  <Primer::Alpha::Stack direction={:horizontal} mt={2}>
+    <Card>
+      <WithTitle>We ❤️ ViewComponent</WithTitle>
+      <WithIcon>
+        <Primer::Beta::Octicon icon={:package} size={:medium} />
+      </WithIcon>
+      <WithBody>
+        {"Render your existing view components from the browser by updating their state, just like you would in React or Vue. Call methods on your components to keep logic in Ruby."}
+      </WithBody>
+    </Card>
+    <Card>
+      <WithTitle>Seriously Fast</WithTitle>
+      <WithIcon>
+        <Primer::Beta::Octicon icon={:zap} size={:medium} />
+      </WithIcon>
+      <WithBody>
+        {"Although rendering is done server-side, LiveComponents typically render in ~50ms or less by avoiding Rails overhead. LiveComponent tracks your component's state so re-renders can often be done outside the controller."}
+      </WithBody>
+    </Card>
+    <Card>
+      <WithTitle>Built on Stimulus</WithTitle>
+      <WithIcon>
+        <StimulusLogo width="24px" height="24px" style="flex-shrink: 0" />
+      </WithIcon>
+      <WithBody>
+        {"Leverage the techniques you already know for adding rich interactivity to Rails. LiveComponent is built on Stimulus and designed to work seamlessly with Hotwire."}
+      </WithBody>
+    </Card>
+  </Primer::Alpha::Stack>
+  <Primer::Alpha::Stack mt={3}>
+    <div>
+      <H1>About</H1>
+      <hr/>
+    </div>
+    <Para>
+      {"LiveComponent offers the same core feature set as React or Angular, allowing the programmer to dynamically update the page in response to changes in state. Components are rendered (and re-rendered) on the server-side, and the resulting HTML is morphed into the DOM at the component boundary."}
+    </Para>
+    <Para>
+      {"At their core, LiveComponents are just view components with a special kind of Stimulus controller. When the component is first rendered, LiveComponent keeps track of the parameters it was initialized with (referred to as the component's \"state\") and sends them to the front-end. The state can be updated in JavaScript and sent to the backend, which then re-renders the component and responds with HTML."}
+    </Para>
+    <div>
+      <H1>Example</H1>
+      <hr/>
+    </div>
+    <Para>
+      {"In the example below, the `TodoItemComponent` has a sidecar JavaScript file that defines a Stimulus controller. This controller inherits from `LiveController`, a base class that adds LiveComponent's dynamic rendering features."}
+    </Para>
+    <Para>
+      {"When the user clicks the edit button, Stimulus calls the `edit()` function on the controller. The controller in turn sets the `editing` prop on the component's state to `true`, which causes the component to re-render and display a text field and submit button where the todo item's description text used to be."}
+    </Para>
+    <FileBrowser
+      package={ExampleOne.instance}
+      current-path={["app", "components", "todo_item_component.ts"]}
+    />
+    <div>
+      <H1>Rationale</H1>
+      <hr/>
+    </div>
+    <Para>
+      The complexity and fragmentation of the front-end landscape continues to grow, with even simple blogging sites now requiring byzantine build systems and megabytes of JavaScript just to display some text. Rendering is done entirely in JavaScript, leading to fragile pages and poor performance.
+    </Para>
+    <Para>
+      {"We've all experienced the consequences: instead of the content you were expecting, now you get a blank page with no explanation as to what went wrong. Clicking the submit button doesn't do anything. The JavaScript console is full of warnings and error messages pointing to minified, transpiled code in dependencies of dependencies. Nobody can explain why sourcemaps aren't working in development. The list goes on and on."}
+    </Para>
+    <Para>
+      {"LiveComponent is an attempt to shift live updates to the server so you can re-render your view components by simply updating their state. It does so using tried-and-true technologies like HTTP, HTML, and a bit of JavaScript when necessary."}
+    </Para>
+    <Para>
+      {"In this way, LiveComponent offers the same fidelity as frameworks like React but without large bundle sizes. Since LiveComponent \"remembers\" the state of your components, it can re-render them very quickly: on the order of ~50ms or less."}
+    </Para>
+  </Primer::Alpha::Stack>
+</>

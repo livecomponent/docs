@@ -1,0 +1,9 @@
+.ColorModeToggle {
+  & .ToggleSwitch-status {
+    display: none;
+  }
+
+  & .ToggleSwitch-statusIcon {
+    display: none;
+  }
+}

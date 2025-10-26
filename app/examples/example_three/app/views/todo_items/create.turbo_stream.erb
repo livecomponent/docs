@@ -1,0 +1,3 @@
+<%= live.rerender(todo_list: @todo_list) do |todo_list_component| %>
+  <% todo_list_component.with_todo_item(todo_item: @todo_item) %>
+<% end %>

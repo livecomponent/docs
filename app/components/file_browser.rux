@@ -1,0 +1,166 @@
+# frozen_string_literal: true
+
+require "rouge"
+
+class FileBrowser < ApplicationComponent
+  delegate :with_file, to: :@tree_view
+
+  def initialize(current_path:, preview_url: nil, package: nil, **system_arguments)
+    @tree_view = Primer::Alpha::TreeView.new(data: { target: "file-browser-element.treeView" })
+    @current_path = current_path
+    @preview_url = preview_url
+    @file_content = {}
+    @package = package
+    @system_arguments = system_arguments
+  end
+
+  def with_directory(**system_arguments, &block)
+    @tree_view.with_sub_tree(
+      component_klass: DirectoryNode,
+      file_browser: self,
+      current_path: @current_path,
+      **system_arguments,
+      &block
+    )
+  end
+
+  def with_file(**system_arguments, &block)
+    @tree_view.with_sub_tree(
+      component_klass: FileNode,
+      file_browser: self,
+      current_path: @current_path,
+      **system_arguments,
+      &block
+    )
+  end
+
+  def add_file_content(path, content)
+    @file_content[path] = content
+  end
+
+  def call
+    <file-browser>
+      <Primer::Alpha::Stack classes="FileBrowser border border-color-default rounded-2" style="gap: 0" {**@system_arguments}>
+        <Primer::Alpha::Stack classes="border-bottom border-color-default p-2" direction={:horizontal}>
+          <Primer::Beta::IconButton
+            icon={:"sidebar-expand"}
+            scheme={:invisible}
+            aria={{ label: "Collapse file tree" }}
+            data={{ target: "file-browser.collapseNavPaneButton" }}
+          />
+          <Primer::Beta::IconButton
+            icon={:"sidebar-collapse"}
+            scheme={:invisible}
+            aria={{ label: "Expand file tree" }}
+            data={{ target: "file-browser.expandNavPaneButton" }}
+            hidden
+          />
+          {if @preview_url
+            <Primer::Alpha::SegmentedControl aria={{ label: "File browser view" }}>
+              <WithItem label="Code Explorer" selected={true} />
+              <WithItem label="Preview" />
+            </Primer::Alpha::SegmentedControl>
+          end}
+        </Primer::Alpha::Stack>
+        <Primer::Alpha::Stack direction={:horizontal} classes="FileBrowser--wrapper">
+          <Primer::Alpha::Stack
+            classes="FileBrowser-NavPane border-right border-color-default pl-3 pr-2 pt-2 pb-2"
+            data={{ target: "file-browser.navPane" }}
+          >
+            <Component instance={@tree_view} />
+          </Primer::Alpha::Stack>
+          <Primer::Alpha::Stack
+            classes="FileBrowser-CodeExplorerPane pt-2 pb-2 pr-3 pl-3"
+            data={{ target: "file-browser.codeExplorerPane" }}
+          >
+            {@file_content.map do |path, file_content|
+              <Primer::BaseComponent
+                tag={:div}
+                data={{ path: path.to_json, targets: "file-browser.contents" }}
+                hidden={path != @current_path}
+              >
+                <div class="FileBrowser-CodeExplorerPane--light">
+                  {highlight(path, file_content, :light)}
+                </div>
+                <div class="FileBrowser-CodeExplorerPane--dark">
+                  {highlight(path, file_content, :dark)}
+                </div>
+              </Primer::BaseComponent>
+            end}
+          </Primer::Alpha::Stack>
+          {if @preview_url
+            <Primer::Alpha::Stack hidden classes="FileBrowser-PreviewPane" data={{ target: "file-browser.previewPane" }}>
+              <Primer::BaseComponent
+                tag={:iframe}
+                classes="FileBrowser-PreviewFrame"
+                src={@preview_url}
+                data={{ target: "file-browser.previewFrame" }}
+              />
+            </Primer::Alpha::Stack>
+          end}
+        </Primer::Alpha::Stack>
+      </Primer::Alpha::Stack>
+    </file-browser>
+  end
+
+  private
+
+  def highlight(path, file_content, mode)
+    theme = Rouge::Themes::Github.mode(mode)
+    formatter = Rouge::Formatters::HTMLInline.new(theme)
+    table_formatter = Rouge::Formatters::HTMLLineTable.new(formatter)
+
+    lexer = case File.extname(path.last)
+    when ".rb"
+      Rouge::Lexers::Ruby.new
+    when ".js"
+      Rouge::Lexers::Javascript.new
+    when ".ts"
+      Rouge::Lexers::Typescript.new
+    when ".erb"
+      Rouge::Lexers::ERB.new
+    end
+
+    return "".html_safe unless lexer
+
+    table_formatter.format(lexer.lex(file_content)).html_safe
+  end
+
+  def before_render
+    content
+
+    return unless @package
+
+    tree = {}
+
+    @package.entries.each do |entry|
+      current = tree
+      segments = entry.relative_path.split(File::SEPARATOR)
+
+      segments[0..-2].each do |segment|
+        current[:directories] ||= {}
+        current[:directories][segment] ||= {}
+        current = current[:directories][segment]
+      end
+
+      current[:files] ||= {}
+      current[:files][segments.last] = entry
+    end
+
+    populate(tree, self)
+  end
+
+  def populate(tree, node)
+    keys = (tree.fetch(:files, {}).keys + tree.fetch(:directories, {}).keys).sort
+
+    keys.each do |key|
+      if tree.fetch(:files, {}).include?(key)
+        node.with_file(label: key, file_content: tree[:files][key].contents)
+      else
+        node.with_directory(label: key, expanded: true) do |sub_dir|
+          populate(tree[:directories][key], sub_dir)
+        end
+      end
+    end
+  end
+end

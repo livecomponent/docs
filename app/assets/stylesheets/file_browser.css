@@ -1,0 +1,75 @@
+.FileBrowser {
+  min-height: 60dvh;
+
+  & .FileBrowser--wrapper {
+    flex-grow: 1;
+    gap: 0;
+  }
+
+  & .FileBrowser-NavPane {
+    width: 33%;
+    flex-shrink: 0;
+  }
+
+  & .FileBrowser-CodeExplorerPane {
+    overflow: scroll;
+    background-color: var(--bgColor-muted, var(--color-canvas-subtle));
+    width: 100%;
+  }
+
+  & .FileBrowser-PreviewPane {
+    flex-grow: 1;
+  }
+
+  & .FileBrowser-PreviewFrame {
+    flex-grow: 1;
+    border: 0;
+  }
+
+  & tree-view {
+    height: 100%;
+
+    & .TreeViewItemContent {
+      overflow: hidden;
+    }
+  }
+
+  & .rouge-line-table pre {
+    font-size: var(--h4-size, 16px);
+  }
+
+  & .rouge-gutter {
+    border-right: 1px solid var(--borderColor-default, var(--color-border-default));
+
+    & pre {
+      width: 20px;
+      margin-right: 10px;
+      text-align: right;
+      color: var(--fgColor-muted, var(--color-fg-muted));
+    }
+  }
+
+  & .rouge-code pre {
+    margin-left: 15px;
+  }
+}
+
+body[data-color-mode="dark"] {
+  .FileBrowser-CodeExplorerPane--dark {
+    display: block;
+  }
+
+  .FileBrowser-CodeExplorerPane--light {
+    display: none;
+  }
+}
+
+body[data-color-mode="light"] {
+  .FileBrowser-CodeExplorerPane--dark {
+    display: none;
+  }
+
+  .FileBrowser-CodeExplorerPane--light {
+    display: block;
+  }
+}

@@ -1,0 +1,118 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>Getting Started</H1>
+    <hr />
+  </div>
+  <Para>
+    {"The following steps describe how to add LiveComponent to an existing Rails application."}
+  </Para>
+  <H2>Install gem</H2>
+  <Para>
+    {"First, install the live_component Ruby gem. Typically this is done by adding it to your Gemfile:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        gem "live_component", "~> 1.0"
+      RUBY
+    }
+  />
+  <Para>
+    {"Once the gem is listed in your Gemfile, you can run `bundle install` to install it."}
+  </Para>
+  <Para>
+    {"Alternatively, you can add live_component to your bundle via `bundle add`:"}
+  </Para>
+  <CodeBlock
+    language={:shell}
+    code="bundle add live_component"
+  />
+  <H2>Install JavaScript package</H2>
+  <Para>
+    {"Next, install the JavaScript package using your package manager of choice. Add it to your package.json file, eg:"}
+  </Para>
+  <CodeBlock
+    language={:json}
+    code={
+      <<~JSON
+        "dependencies": {
+          "@camertron/live-component": "^1.0.0"
+        }
+      JSON
+    }
+  />
+  <Para>
+    {"Once the package is listed in your package.json, you can run `npm install` (or another similar command depending on your package manager) to install it."}
+  </Para>
+  <Para>
+    {"Alternatively, you can add live-component to your application via `npm add` or similar:"}
+  </Para>
+  <CodeBlock
+    language={:shell}
+    code={
+      <<~SHELL
+        npm add @camertron/live-component --save
+      SHELL
+    }
+  />
+  <H2>Insert middleware</H2>
+  <Para>
+    {"One of the ways LiveComponent achieves good performance is by avoiding a significant amount of Rails overhead. It does so by inserting Rack middleware at the very beginning of the middleware stack."}
+  </Para>
+  <Para>
+    {"In config.ru, require the LiveComponent gem and add the middleware. Your config.ru should look very similar to this:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        require_relative "config/environment"
+        require "live_component/middleware"  # <-- add this line
+
+        use LiveComponent::Middleware  # <-- add this line
+        run Rails.application
+
+        Rails.application.load_server
+      RUBY
+    }
+  />
+  <H2>Add JavaScript</H2>
+  <Para>
+    {"LiveComponent's JavaScript works best with a bundler like "}
+    <a href="https://vite-ruby.netlify.app/" target="_blank">Vite</a>
+    {" or "}
+    <a href="https://github.com/shakacode/shakapacker" target="_blank">Webpack</a>
+    {", and has not been tested with importmaps. LiveComponent also makes use of TypeScript decorators, which are an experimental feature not yet available in vanilla JavaScript. For that reason, all the documentation examples use TypeScript."}
+  </Para>
+  <Para>
+    {"On the client-side, LiveComponent is really just a fancy Stimulus controller. In your application's entrypoint, eg. app/javascript/entrypoint/application.ts, start Stimulus and then start LiveComponent:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        // Import with aliases to distinguish the two Application classes
+        import { Application as LiveComponentApplication } from "@camertron/live-component";
+        import { Application as StimulusApplication } from "@hotwired/stimulus";
+
+        // Add some declarations on window to make the TypeScript compiler happy
+        declare global {
+          interface Window {
+            Stimulus: StimulusApplication;
+            Live: LiveComponentApplication;
+          }
+        }
+
+        // Start both the Stimulus and LiveComponent applications
+        window.Stimulus = StimulusApplication.start();
+        window.Live = LiveComponentApplication.start(window.Stimulus);
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"LiveComponent should now be ready to use 🎉🎉🎉"}
+  </Para>
+  <FooterNav>
+    <WithForwardLink href={your_first_component_path} label="Your First Component" />
+    <WithBackwardLink href={root_path} label="Overview" />
+  </FooterNav>
+</Primer::Alpha::Stack>

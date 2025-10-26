@@ -1,0 +1,69 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>Adding New Todos</H1>
+    <hr/>
+  </div>
+  <Primer::Alpha::Banner>
+    <Primer::Beta::Text font-size={4}>
+      {"This page is part of a series that describes building a complete todo list application with LiveComponent. Please consider reading it from "}
+      <a href={your_first_component_path}>the beginning</a>
+      {"."}
+    </Primer::Beta::Text>
+  </Primer::Alpha::Banner>
+  <Para>
+    {"Now that we've seen how LiveComponent works with Hotwire, let's expand the capabilities of our app so we can add new items to the todo list."}
+  </Para>
+  <H2>Adding a List Component</H2>
+  <Para>
+    {"In order for our app to support multiple users, we need the ability to manage multiple todo lists. Let's create a `TodoListComponent` that renders a title and the list of items from a `TodoList` model. We'll also add a form with a single text field and a submit button."}
+  </Para>
+  <FileBrowser
+    package={ExampleTwo.instance}
+    current-path={["app", "components", "todo_list_component.html.erb"]}
+  />
+  <H2>The `create` Action</H2>
+  <Para>
+    {"As we saw earlier, Turbo automatically handles submitting forms without refreshing the page. Since we passed the `rerender` argument to `form_with`, all the state necessary to rerender our `TodoListComponent` will be submitted along with the form, including the state to rerender all the `TodoItemComponent` slots. To add the new item, all we have to do is add another slot."}
+  </Para>
+  <Para>
+    {"To do so, let's add a basic `create` action to app/controllers/todo_items_controller (note that we've excluded the `update` action we wrote earlier for brevity)."}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemsController < ApplicationController
+          def create
+            @todo_list = TodoList.find(params[:todo_list_id])
+            @todo_item = @todo_list.todo_items.create(todo_item_params)
+          end
+
+          private
+
+          def todo_item_params
+            params.require(:todo_item).permit(:text)
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Let's create the corresponding template in app/views/todo_items/create.turbo_stream.erb:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= live.rerender(todo_list: @todo_list) do |todo_list_component| %>
+          <% todo_list_component.with_todo_item(todo_item: @todo_item) %>
+        <% end %>
+      ERB
+    }
+  />
+  <Para>
+    {"When the submit button is clicked, the todo list is rerendered with the new item."}
+  </Para>
+  <FooterNav>
+    <WithForwardLink href={removing_todos_path} label="Removing Todos" />
+    <WithBackwardLink href={live_component_and_hotwire_path} label="LiveComponent and Hotwire" />
+  </FooterNav>
+</Primer::Alpha::Stack>

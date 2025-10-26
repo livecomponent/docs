@@ -1,0 +1,23 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>Putting it all Together</H1>
+    <hr/>
+  </div>
+  <Primer::Alpha::Banner>
+    <Primer::Beta::Text font-size={4}>
+      {"This page is part of a series that describes building a complete todo list application with LiveComponent. Please consider reading it from "}
+      <a href={your_first_component_path}>the beginning</a>
+      {"."}
+    </Primer::Beta::Text>
+  </Primer::Alpha::Banner>
+  <Para>
+    {"Below is the full todo list example demonstrating all the usual CRUD operations and how to rerender from the client-side."}
+  </Para>
+  <FileBrowser
+    package={ExampleThree.instance}
+    current-path={["app", "controllers", "todo_lists_controller.rb"]}
+  />
+  <FooterNav>
+    <WithBackwardLink href={removing_todos_path} label="Removing Todos" />
+  </FooterNav>
+</Primer::Alpha::Stack>

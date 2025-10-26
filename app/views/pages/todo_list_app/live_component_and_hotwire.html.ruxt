@@ -1,0 +1,173 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>LiveComponent and Hotwire</H1>
+    <hr/>
+  </div>
+  <Primer::Alpha::Banner>
+    <Primer::Beta::Text font-size={4}>
+      {"This page is part of a series that describes building a complete todo list application with LiveComponent. Please consider reading it from "}
+      <a href={your_first_component_path}>the beginning</a>
+      {"."}
+    </Primer::Beta::Text>
+  </Primer::Alpha::Banner>
+  <Para>
+    {"In the previous section we created a component that represents a single todo list item. Our component features an edit button that lets you modify the item's text, but no submit button for actually persisting the new value. The next few steps describe how to add one by leveraging LiveComponent's integration with "}
+    <a href="https://hotwired.dev/" target="_blank">Hotwire</a>
+    {", Rails' built-in framework for server-driven interactivity."}
+  </Para>
+  <H2>The Trouble with IDs</H2>
+  <Para>
+    {"Let's take a look at the ERB template for our todo list item from the last section."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <% if @editing %>
+            <%= form_with(model: @todo_item) do |f| %>
+              <%= f.text_field :text %>
+              <%= f.submit %>
+            <% end %>
+          <% else %>
+            <%= @todo_item.text %>
+            <%= button_tag(
+              "Edit",
+              data: { target: "click->todoitemcomponent#edit" }
+            ) %>
+          <% end %>
+        </div>
+      ERB
+    }
+  />
+  <Para>
+    {"Turbo (part of Hotwire) already handles submitting the form without reloading the page. In a standard Rails and Hotwire setup, we would wrap our form in a "}
+    <a href="https://turbo.hotwired.dev/handbook/frames" target="_blank">turbo frame</a>
+    {" and program our controller to respond with a replacement frame on form submission. Both the original frame and the new one must have the same ID - that's how Turbo knows which part of the page to update."}
+  </Para>
+  <Para>
+    {"Making sure the IDs match requires a significant level of coupling between templates, which can be annoying and error-prone. One of LiveComponent's goals is to get rid of this sort of ID matching, and nowhere is that more evident than with forms."}
+  </Para>
+  <H2>Rerendering on Submit</H2>
+  <Para>
+    {"LiveComponent extends `form_with` to accept another keyword argument called `rerender`. Let's update our form to rerender the surrounding todo item component."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <div class="TodoItem">
+          <% if @editing %>
+            <%= form_with(model: @todo_item, rerender: :self) do |f| %>
+              <%= f.text_field :text %>
+              <%= f.submit %>
+            <% end %>
+          <% else %>
+            <%= @todo_item.text %>
+            <%= button_tag(
+              "Edit",
+              data: { target: "click->todoitemcomponent#edit" }
+            ) %>
+          <% end %>
+        </div>
+      ERB
+    }
+  />
+  <Para>
+    {"With that one argument, we have associated the form with the todo item component without having to reference or keep track of any IDs. LiveComponent handles the connection automatically for us."}
+  </Para>
+  <H2>Handling the Form Submission</H2>
+  <Para>
+    {"Now that we've instructed the form to rerender itself on submit, it's time to wire things up on the backend. For now, we'll create a standard Rails controller and respond with a standard "}
+    <a href="https://turbo.hotwired.dev/handbook/streams" target="_blank">turbo stream</a>
+    {":"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemsController < ApplicationController
+          def update
+            @todo_item = TodoItem.find(params[:id])
+            @todo_item.update(todo_item_params)
+          end
+
+          private
+
+          def todo_item_params
+            params.require(:todo_item).permit(:text)
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Nothing fancy going on here. When the form is submitted, the `update` action renders a replacement turbo frame from the template stored at app/views/todo_items/update.turbo_stream.erb, which might look something like this:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= turbo_frame_tag(id: "todo_item_\#{@todo_item.id}") do %>
+          <%= render(TodoItemComponent.new(todo_item: todo_item)) %>
+        <% end %>
+      ERB
+    }
+  />
+  <Para>
+    {"Please note that, as things stand now, this won't work - the turbo frame's ID doesn't exist anywhere on the page, so Turbo won't know what part of the page to replace. Let's fix that."}
+  </Para>
+  <Para>
+    {"Rather than targeting an ID for replacement though, we can use `live.rerender`:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= live.rerender(todo_item: @todo_item, editing: false) %>
+      ERB
+    }
+  />
+  <Para>
+    {"Notice that we didn't even have to specify a component instance or class to rerender! Behind the scenes, clicking the submit button included all the state necessary to rerender the todo item. We were able to override just the arguments we wanted to change, like the refreshed `todo_item` model instance and the edit mode. LiveComponent automatically wraps the response in a turbo frame and morphs the changes into the DOM."}
+  </Para>
+  <Para>
+    {"Alternatively, we can choose to rerender directly from the controller instead:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemsController < ApplicationController
+          def update
+            @todo_item = TodoItem.find(params[:id])
+            @todo_item.update(todo_item_params)
+
+            respond_to do |format|
+              format.turbo_stream do
+                render turbo_stream: live.rerender(todo_item: @todo_item, editing: false)
+              end
+            end
+          end
+
+          private
+
+          def todo_item_params
+            params.require(:todo_item).permit(:text)
+          end
+        end
+      RUBY
+    }
+  />
+  <H2>Even More Power</H2>
+  <Para>
+    {"The `live.rerender` method works just like Rails' `render` method, so anything you can do with `render` you can also do with `live.rerender`. Complex template logic, setting "}
+      <a href="https://viewcomponent.org/guide/slots.html" target="_blank">slots</a>
+      {", etc are all possible."}
+  </Para>
+  <Para>
+    {"Continue to the next section to see some of these capabilities in action as we contine to build out our todo list application."}
+  </Para>
+  <FooterNav>
+    <WithForwardLink href={adding_new_todos_path} label="Adding New Todos" />
+    <WithBackwardLink href={your_first_component_path} label="Your First Component" />
+  </FooterNav>
+</Primer::Alpha::Stack>

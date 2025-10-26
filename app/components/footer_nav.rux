@@ -1,0 +1,54 @@
+# frozen_string_literal: true
+
+class FooterNav < ApplicationComponent
+  class Link < ApplicationComponent
+    def initialize(label:, href:)
+      @label = label
+      @href = href
+    end
+  end
+
+  class ForwardLink < Link
+    def call
+      <Primer::Beta::Link href={@href} color={:default} font-size={4}>
+        <Primer::Alpha::Stack direction={:horizontal} align={:center}>
+          <span>{@label}</span>
+          <Primer::Beta::Octicon icon={:"chevron-right"} size={:medium} />
+        </Primer::Alpha::Stack>
+      </Primer::Beta::Link>
+    end
+  end
+
+  class BackwardLink < Link
+    def call
+      <Primer::Beta::Link href={@href} color={:default} font-size={4}>
+        <Primer::Alpha::Stack direction={:horizontal} align={:center}>
+          <Primer::Beta::Octicon icon={:"chevron-left"} size={:medium} />
+          <span>{@label}</span>
+        </Primer::Alpha::Stack>
+      </Primer::Beta::Link>
+    end
+  end
+
+  renders_one :forward_link, ForwardLink
+  renders_one :backward_link, BackwardLink
+
+  def initialize(**system_arguments)
+    @system_arguments = system_arguments
+  end
+
+  def call
+    <Primer::Alpha::Stack direction={:horizontal} justify={:space_between} mt={5} {**@system_arguments}>
+      {if backward_link?
+        <>{backward_link}</>
+      else
+        <div></div>
+      end}
+      {if forward_link?
+        <>{forward_link}</>
+      else
+        <div></div>
+      end}
+    </Primer::Alpha::Stack>
+  end
+end

@@ -1,0 +1,34 @@
+.CodeBlock {
+  font-family: var(--fontStack-monospace);
+  padding: 15px;
+  border-radius: 5px;
+
+  pre {
+    font-size: 14px;
+  }
+}
+
+body[data-color-mode="dark"] {
+  .CodeBlock {
+    background-color: #1A1A1A;
+  }
+
+  .CodeBlock--light {
+    display: none;
+  }
+}
+
+body[data-color-mode="light"] {
+  .CodeBlock {
+    background-color: #EBEBEB;
+
+    & span {
+      /* rouge's background colors don't look good in light mode for some reason */
+      background-color: transparent !important;
+    }
+  }
+
+  .CodeBlock--dark {
+    display: none;
+  }
+}

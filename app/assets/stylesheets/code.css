@@ -1,0 +1,21 @@
+.Code {
+  font-family: var(--fontStack-monospace);
+  color: var(--fgColor-default, var(--color-fg-default));
+  border: 1px solid;
+  border-radius: 5px;
+  padding: 1px 3px 1px 3px;
+}
+
+body[data-color-mode="dark"] {
+  .Code {
+    border-color: #666;
+    background-color: var(--bgColor-emphasis, var(--color-neutral-emphasis-plus));
+  }
+}
+
+body[data-color-mode="light"] {
+  .Code {
+    border-color: #CCC;
+    background-color: var(--bgColor-muted, var(--color-canvas-subtle)) !important;
+  }
+}

@@ -1,0 +1,5 @@
+<%= live.rerender do |todo_list_component| %>
+  <% todo_list_component.todo_items.reject! do |todo_item_component| %>
+    <% todo_item_component.todo_item.id == params[:id].to_i %>
+  <% end %>
+<% end %>

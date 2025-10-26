@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+class ColorModeToggle < ApplicationComponent
+  def call
+    <color-mode-toggle>
+      <Primer::Alpha::Stack direction={:horizontal} align={:center}>
+        <Primer::Beta::Octicon icon={:moon} />
+        <Primer::Alpha::ToggleSwitch classes="ColorModeToggle" />
+        <Primer::Beta::Octicon icon={:sun} />
+      </Primer::Alpha::Stack>
+    </color-mode-toggle>
+  end
+end
