@@ -6,6 +6,9 @@ export default defineConfig({
   plugins: [
     RubyPlugin(),
   ],
+  esbuild: {
+    keepNames: true,
+  },
   resolve: {
     alias: {
       "@camertron/live-component": "/Users/camertron/workspace/camertron/live_component/testapp/app/javascript/@camertron/live-component",
