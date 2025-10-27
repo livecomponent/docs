@@ -70,9 +70,9 @@ export default class ColorModeToggleElement extends HTMLElement {
         document.querySelector("body").setAttribute("data-color-mode", this.#colorMode);
         window.localStorage.setItem("colorModePreference", this.#colorMode);
 
-        document.querySelectorAll("file-browser").forEach((fileBrowser: FileBrowserElement) => {
-          fileBrowser.setColorMode(this.#colorMode);
-        });
+        // document.querySelectorAll("file-browser").forEach((fileBrowser: FileBrowserElement) => {
+        //   fileBrowser.setColorMode(this.#colorMode);
+        // });
       }
     );
   }

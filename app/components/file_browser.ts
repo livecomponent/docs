@@ -36,11 +36,11 @@ export default class FileBrowserElement extends HTMLElement {
     }
   }
 
-  setColorMode(colorMode: ColorMode) {
-    const src = new URL(this.#previewFrame.src);
-    src.searchParams.set("colorMode", colorMode);
-    this.#previewFrame.src = src.toString();
-  }
+  // setColorMode(colorMode: ColorMode) {
+  //   const src = new URL(this.#previewFrame.src);
+  //   src.searchParams.set("colorMode", colorMode);
+  //   this.#previewFrame.src = src.toString();
+  // }
 
   #handleExpandNavPaneClicked() {
     this.#navPaneExpanded = true;
