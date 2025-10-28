@@ -28,14 +28,14 @@
 
   <body data-color-mode="dark" data-light-theme="light" data-dark-theme="dark">
     <div class="border-bottom color-border-default">
-      <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, classes: "container-xl", style: "height: 75px")) do %>
+      <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, pl: 3, pr: 3, classes: "container-xl", style: "height: 75px")) do %>
         <%= render(Logo.new(style: "width: 250px")) %>
         <%= render(ColorModeToggle.new) %>
       <% end %>
     </div>
     <%= render(Primer::Alpha::Layout.new(classes: "container-xl mt-3")) do |layout| %>
-      <% layout.with_sidebar do %>
-        <%= render(Primer::Beta::NavList.new(ml: 6, mt: 2, aria: { label: "Navigation list" }, selected_item_id: @nav_selected_item_id)) do |nav_list| %>
+      <% layout.with_sidebar(pl: 3, pr: 3) do %>
+        <%= render(Primer::Beta::NavList.new(ml: [0, 4, 4, 6], mr: [0, 0, 0, 6], mt: 2, aria: { label: "Navigation list" }, selected_item_id: @nav_selected_item_id)) do |nav_list| %>
           <% nav_list.with_item(href: root_path, label: "Overview", selected_by_ids: [:overview]) %>
           <% nav_list.with_item(href: getting_started_path, label: "Getting Started", selected_by_ids: [:getting_started]) %>
           <% nav_list.with_item(label: "Todo List App", expanded: true) do |item| %>
@@ -47,11 +47,11 @@
           <% end %>
         <% end %>
       <% end %>
-      <% layout.with_main do %>
+      <% layout.with_main(pr: 3, pl: 3) do %>
         <%= yield %>
       <% end %>
     <% end %>
-    <div class="Footer border-top color-border-default">
+    <div class="Footer border-top color-border-default pr-3 pl-3">
       <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, classes: "container-xl", style: "height: 200px")) do %>
         <%= render(Primer::Alpha::Stack.new(gap: :condensed)) do %>
           <%= render(LogoType.new(width: "200px")) %>

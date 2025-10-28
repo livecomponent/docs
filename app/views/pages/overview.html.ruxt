@@ -1,13 +1,13 @@
 <>
-  <Primer::BaseComponent tag={:img} border-radius={3} mt={2} src={image_path("hero.svg")} />
-  <Card>
+  <Primer::BaseComponent tag={:img} border-radius={3} mt={2} src={image_path("hero.svg")} classes="Hero" />
+  <Card mt={3}>
     <WithBody>
-      <Primer::Alpha::Stack tag={:p} font-size={3} align={:center} justify={:center}>
+      <Primer::Alpha::Stack tag={:p} font-size={3} align={:center} justify={:center} text-align={:center}>
         <span>LiveComponent is a <Primer::BaseComponent tag={:span} color={:severe}>client-side rendering</Primer::BaseComponent> and <Primer::BaseComponent tag={:span} color={:severe}>state management</Primer::BaseComponent> library for ViewComponent.</span>
       </Primer::Alpha::Stack>
     </WithBody>
   </Card>
-  <Primer::Alpha::Stack direction={:horizontal} mt={2}>
+  <Primer::Alpha::Stack direction={{ narrow: :vertical, regular: :vertical, wide: :horizontal }} mt={3}>
     <Card>
       <WithTitle>We ❤️ ViewComponent</WithTitle>
       <WithIcon>

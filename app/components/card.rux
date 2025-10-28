@@ -10,7 +10,7 @@ class Card < ApplicationComponent
   end
 
   def call
-    <Primer::BaseComponent tag={:div} border-radius={3} mt={3} p={3} bg={:subtle} border={true} style="flex-grow: 1; flex-basis: 0" {**@system_arguments}>
+    <Primer::BaseComponent tag={:div} border-radius={3} p={3} bg={:subtle} border={true} style="flex-grow: 1; flex-basis: 0" {**@system_arguments}>
       <Primer::Alpha::Stack direction={:horizontal} align={:start} justify={:center}>
         {if icon?
           icon
