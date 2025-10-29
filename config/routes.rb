@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get "/todo-list-app/adding-new-todos", to: "pages#adding_new_todos", as: :adding_new_todos
   get "/todo-list-app/removing-todos", to: "pages#removing_todos", as: :removing_todos
   get "/todo-list-app/putting-it-all-together", to: "pages#putting_it_all_together", as: :putting_it_all_together
+  get "/state-tracking", to: "pages#state_tracking", as: :state_tracking
 
   resources :examples, param: :name, only: [:show]
   resources :todo_items

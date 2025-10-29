@@ -1,0 +1,108 @@
+<Primer::Alpha::Stack>
+  <H1>State Tracking</H1>
+  <Para>
+    {"LiveComponent automatically tracks the state of your components. In fact, the key innovation behind LiveComponent is recognizing that a component can be entirely reconstituted from its state independent of the context or surrounding markup."}
+  </Para>
+  <H2>Keyword Arguments</H2>
+  <Para>
+    {"In a framework like React, state is manually tracked via calls to hooks like `useState`. State can also be derived from props, the arguments a component receives from its parent. When props or state changes, React automatically re-renders the component."}
+  </Para>
+  <Para>
+    {"LiveComponent follows a similar pattern. A component's arguments - or more specifically, it's "}
+    <em>keyword</em>
+    {" arguments - are tracked automatically. These arguments can be modified client-side and sent to the server for re-render. This is done via `this.render` in JavaScript, and closely mirrors the Ruby API. Here's an example we saw when building our todo list application:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("TodoItemComponent") // this is the Ruby class name
+        export class TodoItemComponent extends LiveController {
+          edit() {
+            this.render((component) => {
+              component.props.editing = true;
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Behind the scenes, LiveComponent assembles a JSON data structure with the updated `editing` argument. LiveComponent's server-side rendering mechanism then parses the JSON and sends the keyword arguments into a new instance of the `TodoItemComponent`. The state object looks something like this (parts have been omitted for brevity):"}
+  </Para>
+  <CodeBlock
+    language={:json}
+    code={
+      <<~JSON
+        {
+          "ruby_class": "TodoItemComponent",
+          "props": {
+            "__lc_attributes": {
+              "data-id": "d7fd8295-1f62-4b2f-99cb-178d86749e10",
+              "_lc_symkeys": []
+            },
+            "editing": true
+          },
+          "slots": {},
+          "children": {},
+          "content": null
+        }
+      JSON
+    }
+  />
+  <H2>Thinking in Terms of State</H2>
+  <Para>
+    {"Any state the component should \"remember\" between re-renders "}
+    <em>must</em>
+    {" be passed as a keyword argument to the component's initializer. When the component's state is serialized to be sent to the front-end, LiveComponent reads instance variables with the same name as each keyword argument. There is no secondary mechanism for telling LiveComponent about additional bits of state to track. This is an intentional design decision. Requiring all state to be represented in the initializer's method signature provides several benefits:"}
+  </Para>
+  <ol class="ml-5">
+    <li><strong>Explicitness</strong>: {"All the state a component tracks can be seen in one place."}</li>
+    <li><strong>Simplicity</strong>: {"State is specified as regular 'ol arguments to a regular 'ol Ruby class. There's no fancy state objects at play or a specialized API for getting and setting state."}</li>
+    <li><strong>Predictability</strong>: {"A component's state always consists of the same key/value pairs, even if some state is optional some of the time."}</li>
+  </ol>
+  <H2>Derived State</H2>
+  <Para>
+    {"All \"rememberable\" state must be represented in the component's keyword arguments, which includes derived state (state computed from other state). While it might be tempting to track derived state using only instance variables, remember that there is no other mechanism for tracking state aside from the initializer. In practice this usually means adding a keyword argument with a default value of `nil`."}
+  </Para>
+  <Para>
+    {"For example, let's say we wanted to record how much time it took the user to edit a todo item. The component starts out in non-edit mode, which means there is no starting time. The timer starts when the user switches to edit mode, and stops when they're done. Here's how you might implement such a feature:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          def initialize(todo_item:, editing: false, start_time: editing ? Time.now : nil)
+            @todo_item = todo_item
+            @editing = editing
+            @start_time = start_time
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"As we saw earlier, the component class accepts `editing:` as a keyword argument:"}
+  </Para>
+  <CodeBlock
+    code={
+      <<~RUBY
+        class TodoItemComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          def initialize(todo_item:, editing: false)
+            @todo_item = todo_item
+            @editing = editing
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {""}
+  </Para>
+</Primer::Alpha::Stack>

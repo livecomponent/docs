@@ -33,4 +33,8 @@ class PagesController < ApplicationController
     @nav_selected_item_id = :putting_it_all_together
     render "pages/todo_list_app/putting_it_all_together"
   end
+
+  def state_tracking
+    @nav_selected_item_id = :state_tracking
+  end
 end
