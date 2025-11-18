@@ -6,6 +6,7 @@ public/vite-dev
 build/
 storage/
 log/
+.DS_Store
 
 ##### ONLOAD BUILD ARTIFACTS (AUTO-GENERATED) #####
 app/components/card.rb

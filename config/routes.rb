@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   get "/todo-list-app/removing-todos", to: "pages#removing_todos", as: :removing_todos
   get "/todo-list-app/putting-it-all-together", to: "pages#putting_it_all_together", as: :putting_it_all_together
   get "/state-tracking", to: "pages#state_tracking", as: :state_tracking
+  get "/react-integration", to: "pages#react_integration", as: :react_integration
 
   resources :examples, param: :name, only: [:show]
   resources :todo_items

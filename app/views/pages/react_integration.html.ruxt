@@ -1,0 +1,9 @@
+<Primer::Alpha::Stack>
+  <div>
+    <H1>React Integration</H1>
+    <hr />
+  </div>
+  <Para>
+    {"LiveComponent supports React, allowing you to mount React components inside your ViewComponents and update their props from the server. The React component is rendered entirely in the browser, while LiveComponent manages the component's state on the server and forwards props to the React component whenever state changes."}
+  </Para>
+</Primer::Alpha::Stack>

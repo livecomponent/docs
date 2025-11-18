@@ -37,4 +37,8 @@ class PagesController < ApplicationController
   def state_tracking
     @nav_selected_item_id = :state_tracking
   end
+
+  def react_integration
+    @nav_selected_item_id = :react_integration
+  end
 end
