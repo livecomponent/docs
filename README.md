@@ -1,24 +1,23 @@
-# README
+## LiveComponent Documentation
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+This repository contains the docsite for [livecomponent.org](https://livecomponent.org). More accurately, it contains a Rails app that uses the [Parklife gem](https://github.com/benpickles/parklife) to produce a bunch of static pages that are then served by GitHub Pages.
 
-Things you may want to cover:
+### Local Development
 
-* Ruby version
+1. `bundle install`
+2. `npm install`
+3. `bin/dev`
+4. Visit http://localhost:3000 in your browser
+5. Rejoice
 
-* System dependencies
+### Deploying
 
-* Configuration
+1. Run the [parklife workflow](https://github.com/livecomponent/docs/actions/workflows/parklife.yml) in GitHub Actions.
 
-* Database creation
+### License
 
-* Database initialization
+MIT
 
-* How to run the test suite
+### Authors
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Cameron C. Dutro ([@camertron](https://github.com/camertron))
