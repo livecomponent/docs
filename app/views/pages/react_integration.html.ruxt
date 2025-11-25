@@ -6,8 +6,121 @@
   <Para>
     {"LiveComponent supports React, allowing you to mount React components inside your ViewComponents and update their props from the server. The React component is rendered entirely in the browser, while LiveComponent manages the component's state on the server and forwards props to the React component whenever state changes."}
   </Para>
-  <H2>Your First Live React Component</H2>
   <Para>
-    {""}
+    {"React components can be rendered in any part of the Rails view layer - including templates, partials, and view components - by rendering an instance of the `LiveComponent::React` component. This special component functions just like a regular 'ol live component by attaching a Stimulus controller and allowing the developer to update the props, etc. When the component re-renders, LiveComponent reuses the existing React root, passing the updated props into the React component."}
   </Para>
+  <H2>Your First React Integration</H2>
+  <Para>
+    {"Let's define a simple React component for demonstration purposes. Note that this component will need to be added to your application's JavaScript build pipeline in some way."}
+  </Para>
+  <CodeBlock
+    language={:tsx}
+    code={
+      <<~TYPESCRIPT
+        import { useState } from "react";
+
+        export const Counter = ({ initValue }: { initValue: number }) => {
+          const [value, setValue] = useState(initValue);
+
+          return(
+            <>
+              <div>{value}</div>
+              <button onClick={() => setValue(value + 1)}>
+                Increment
+              </button>
+            </>
+          );
+        };
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"We now need to register our React component with LiveComponent:"}
+  </Para>
+  <CodeBlock
+    language={:tsx}
+    code={
+      <<~TYPESCRIPT
+        import { ReactRegistry } from "@camertron/live-component";
+
+        ReactRegistry.register_component("Counter", Counter);
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Now that the React component has been registered, we can render it from the Rails view layer using `LiveComponent::React`. The `component` argument must be the same string you used to register the component. The rest of the arguments are passed as React props."}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= render(LiveComponent::React.new(component: "Counter", initValue: 1)) %>
+      ERB
+    }
+  />
+  <H2>Updating React Props</H2>
+  <Para>
+    {"While `LiveComponent::React` is implemented as a live component, it doesn't offer the ability to attach a custom Stimulus controller the way regular live components do. Updates therefore have to come from a live component wrapper. Normally this isn't too onerous because the wrapper makes the component friendlier to use in Ruby. For example, instead of rendering a `LiveComponent::React`, you might render a `CounterComponent`."}
+  </Para>
+  <Para>
+    {"To wrap our React component, we'll define a component class and a template. Notice that the wrapper component accepts any and all keyword arguments (i.e. `**kwargs`), stores a reference to them, and passes them to the React component on render."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class CounterComponent < ViewComponent::Base
+          include LiveComponent::Base
+
+          def initialize(**kwargs)
+            @kwargs = kwargs
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"And here's the template:"}
+  </Para>
+  <CodeBlock
+    language={:erb}
+    code={
+      <<~ERB
+        <%= render(LiveComponent::React.new(component: "Counter", **@kwargs)) %>
+      ERB
+    }
+  />
+  <Para>
+    {"With this plumbing in place, it is now possible to define a controller for the `CounterComponent` and re-render whenever necessary."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        type CounterComponentProps = {
+          initValue: number;
+        }
+
+        @live("CounterComponent")
+        export class CounterComponent extends LiveController<CounterComponentProps> {
+          do_something() {
+            this.render((component) => {
+              // Your logic here. When the component re-renders, props will automatically
+              // get passed to the React component.
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <H2>Putting it all Together</H2>
+  <Para>
+    {"Here's the full example from above, colocated in one place for easier perusal."}
+  </Para>
+  <FileBrowser
+    package={ReactExample.instance}
+    current-path={["app", "components", "counter_component.tsx"]}
+  />
 </Primer::Alpha::Stack>

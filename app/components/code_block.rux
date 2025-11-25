@@ -33,6 +33,8 @@ class CodeBlock < ApplicationComponent
       Rouge::Lexers::ConsoleLexer.new
     when :json
       Rouge::Lexers::JSON.new
+    when :tsx
+      Rouge::Lexers::TSX.new
     end
 
     formatter.format(lexer.lex(@code || content)).html_safe

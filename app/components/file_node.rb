@@ -19,7 +19,7 @@ class FileNode < Primer::Alpha::TreeView::LeafNode
     icon = case File.extname(@label)
     when ".rb"
       RubyIcon.new
-    when ".ts"
+    when ".ts", ".tsx"
       TypescriptIcon.new
     when ".js"
       JavascriptIcon.new

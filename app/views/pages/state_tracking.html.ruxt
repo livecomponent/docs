@@ -76,33 +76,77 @@
         class TodoItemComponent < ApplicationComponent
           include LiveComponent::Base
 
-          def initialize(todo_item:, editing: false, start_time: editing ? Time.now : nil)
+          def initialize(todo_item:, editing: false, start_time: nil, elapsed_time: nil)
             @todo_item = todo_item
             @editing = editing
             @start_time = start_time
+
+            if @editing && @start_time.nil?
+              @start_time = Time.now
+            elsif !@editing && @start_time.present?
+              @elapsed_time = Time.now - @start_time
+              @start_time = nil
+            end
+          end
+
+          private
+
+          def label_text
+            if @start_time
+              "Editing..."
+            elsif @elapsed_time
+              "User spent \#{@elapsed_time} seconds editing"
+            else
+              "Never edited"
+            end
+          end
+
+          def button_text
+            @start_time ? "Stop editing" : "Edit"
           end
         end
       RUBY
     }
   />
   <Para>
-    {"As we saw earlier, the component class accepts `editing:` as a keyword argument:"}
+    {"Here's the corresponding template:"}
   </Para>
   <CodeBlock
+    language={:erb}
     code={
-      <<~RUBY
-        class TodoItemComponent < ApplicationComponent
-          include LiveComponent::Base
-
-          def initialize(todo_item:, editing: false)
-            @todo_item = todo_item
-            @editing = editing
-          end
-        end
-      RUBY
+      <<~ERB
+        <div><%= label_text %></div>
+        <button data-action="click->timercomponent#on_click">
+          <%= button_text %>
+        </button>
+      ERB
     }
   />
   <Para>
-    {""}
+    {"And here's the client-side code:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        type TimerProps = {
+          editing: boolean
+        }
+
+        @live("TimerComponent")
+        export class TimerComponent extends LiveController<TimerProps> {
+          on_click() {
+            this.render((component) => {
+              component.props.editing = !component.props.editing;
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Note how the component tracks derived state by adding arguments to the initializer and making use of default values."}
   </Para>
 </Primer::Alpha::Stack>
