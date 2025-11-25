@@ -64,7 +64,7 @@
     {"Now that the server-side component is ready, we can define the client-side controller. LiveComponents are built on Stimulus, Rails' built-in JavaScript framework, and are defined in a similar fasion to normal Stimulus controllers."}
   </Para>
   <Para>
-    {"LiveComponent requires that component JavaScript live in a \"sidecar\" file next to the component's Ruby and template files. Doing so ensures LiveComponent discovers your component's JavaScript and renders the appropriate web component wrapper. For this example, let's create app/components/todo_item_component.ts with the following contents. (NOTE: we're using TypeScript here because plain JavaScript does not support decorators, eg `@live`)."}
+    {"LiveComponent requires that component JavaScript live in a \"sidecar\" file next to the component's Ruby and template files. Doing so ensures LiveComponent discovers your component's JavaScript and renders the appropriate web component wrapper. For this example, let's create app/components/todo_item_component.ts with the following contents."}
   </Para>
   <CodeBlock
     language={:ts}
@@ -79,6 +79,29 @@
       TYPESCRIPT
     }
   />
+  <Primer::Alpha::Banner mt={2}>
+    <Para>
+      {"Note that we're using a TypeScript decorator, i.e. `@live`, in the example above. You'll need to have decorators turned on in your tsconfig.json to get `@live` to work. Alternatively, you can register your component without using decorators via `Application.register`, eg:"}
+    </Para>
+    <CodeBlock
+      mt={3}
+      mb={1}
+      border={true}
+      border-radius={2}
+      language={:js}
+      code={
+        <<~JAVASCRIPT
+          import { Application, LiveController } from "@camertron/live-component";
+
+          export class TodoItemComponent extends LiveController {
+            // nothing in here yet
+          }
+
+          Application.register("TodoItemComponent", TodoItemComponent);
+        JAVASCRIPT
+      }
+    />
+  </Primer::Alpha::Banner>
   <H2>Adding Some Interactivity</H2>
   <Para>
     {"Although we don't have a way of saving the changes yet, let's make the \"Edit\" button show a text field so the item's text can be updated."}

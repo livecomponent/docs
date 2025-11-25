@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 class CodeBlock < ApplicationComponent
-  def initialize(language: :ruby, code: nil)
+  def initialize(language: :ruby, code: nil, **system_arguments)
     @language = language
     @code = code
+    @system_arguments = system_arguments
   end
 
   def call
-    <>
+    <Primer::BaseComponent tag={:div} {**@system_arguments}>
       <div class="CodeBlock CodeBlock--light"><pre>{formatted_content(:light)}</pre></div>
       <div class="CodeBlock CodeBlock--dark"><pre>{formatted_content(:dark)}</pre></div>
-    </>
+    </Primer::BaseComponent>
   end
 
   private

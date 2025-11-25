@@ -81,7 +81,7 @@
     <a href="https://vite-ruby.netlify.app/" target="_blank">Vite</a>
     {" or "}
     <a href="https://github.com/shakacode/shakapacker" target="_blank">Webpack</a>
-    {", and has not been tested with importmaps. LiveComponent also makes use of TypeScript decorators, which are an experimental feature not yet available in vanilla JavaScript. For that reason, all the documentation examples use TypeScript."}
+    {", and has not been tested with importmaps."}
   </Para>
   <Para>
     {"On the client-side, LiveComponent is really just a fancy Stimulus controller. In your application's entrypoint, eg. app/javascript/entrypoint/application.ts, start Stimulus and then start LiveComponent:"}
