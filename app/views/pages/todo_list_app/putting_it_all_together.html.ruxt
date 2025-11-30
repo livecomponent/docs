@@ -18,6 +18,7 @@
     current-path={["app", "controllers", "todo_lists_controller.rb"]}
   />
   <FooterNav>
+    <WithForwardLink href={state_tracking_path} label="State tracking" />
     <WithBackwardLink href={removing_todos_path} label="Removing Todos" />
   </FooterNav>
 </Primer::Alpha::Stack>

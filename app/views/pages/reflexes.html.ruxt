@@ -73,4 +73,8 @@
     <Rails::LinkTo url={serialization_path} label="serialization" />
     {" for more information."}
   </Para>
+  <FooterNav>
+    <WithForwardLink href={stimulus_helpers_path} label="Stimulus helpers" />
+    <WithBackwardLink href={slots_path} label="Slots" />
+  </FooterNav>
 </Primer::Alpha::Stack>

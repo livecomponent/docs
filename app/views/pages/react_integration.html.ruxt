@@ -123,4 +123,7 @@
     package={ReactExample.instance}
     current-path={["app", "components", "counter_component.tsx"]}
   />
+  <FooterNav>
+    <WithBackwardLink href={lifecycle_hooks_path} label="Lifecycle hooks" />
+  </FooterNav>
 </Primer::Alpha::Stack>

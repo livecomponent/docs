@@ -41,4 +41,8 @@
       TYPESCRIPT
     }
   />
+  <FooterNav>
+    <WithForwardLink href={react_integration_path} label="React integration" />
+    <WithBackwardLink href={serialization_path} label="Serialization" />
+  </FooterNav>
 </Primer::Alpha::Stack>

@@ -149,4 +149,8 @@
   <Para>
     {"Note how the component tracks derived state by adding arguments to the initializer and making use of default values."}
   </Para>
+  <FooterNav>
+    <WithForwardLink href={slots_path} label="Slots" />
+    <WithBackwardLink href={state_tracking_path} label="State tracking" />
+  </FooterNav>
 </Primer::Alpha::Stack>

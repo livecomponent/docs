@@ -4,4 +4,8 @@
     {""}
   </Para>
   <H2>Secondary header</H2>
+  <FooterNav>
+    <WithForwardLink href={reflexes_path} label="Reflexes" />
+    <WithBackwardLink href={state_tracking_path} label="State tracking" />
+  </FooterNav>
 </Primer::Alpha::Stack>

@@ -453,4 +453,8 @@
       TYPESCRIPT
     }
   />
+  <FooterNav>
+    <WithForwardLink href={lifecycle_hooks_path} label="Lifecycle hooks" />
+    <WithBackwardLink href={stimulus_helpers_path} label="Stimulus helpers" />
+  </FooterNav>
 </Primer::Alpha::Stack>

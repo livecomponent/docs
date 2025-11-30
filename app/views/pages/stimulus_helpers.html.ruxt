@@ -78,4 +78,8 @@
       {"Note that the `on` and `target` methods are only available on components that inherit from (i.e. include) the `LiveComponent::Base` module."}
     </TextBlock>
   </Primer::Alpha::Banner>
+  <FooterNav>
+    <WithForwardLink href={serialization_path} label="Serialization" />
+    <WithBackwardLink href={reflexes_path} label="Reflexes" />
+  </FooterNav>
 </Primer::Alpha::Stack>
