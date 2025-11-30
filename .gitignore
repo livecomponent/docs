@@ -16,4 +16,5 @@ app/components/color_mode_toggle.rb
 app/components/code_block.rb
 app/components/footer_nav.rb
 app/components/heading.rb
+app/components/ordered_list.rb
 ##### END ONLOAD BUILD ARTIFACTS #####

@@ -46,6 +46,10 @@
             <% item.with_item(href: putting_it_all_together_path, label: "Putting it all Together", selected_by_ids: [:putting_it_all_together]) %>
           <% end %>
           <% nav_list.with_item(href: state_tracking_path, label: "State Tracking", selected_by_ids: [:state_tracking]) %>
+          <% nav_list.with_item(href: slots_path, label: "Slots", selected_by_ids: [:slots]) %>
+          <% nav_list.with_item(href: reflexes_path, label: "Reflexes", selected_by_ids: [:reflexes]) %>
+          <% nav_list.with_item(href: serialization_path, label: "Serialization", selected_by_ids: [:serialization]) %>
+          <% nav_list.with_item(href: lifecycle_hooks_path, label: "Lifecycle Hooks", selected_by_ids: [:lifecycle_hooks]) %>
           <% nav_list.with_item(href: react_integration_path, label: "React Integration", selected_by_ids: [:react_integration]) %>
         <% end %>
       <% end %>

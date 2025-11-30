@@ -38,6 +38,22 @@ class PagesController < ApplicationController
     @nav_selected_item_id = :state_tracking
   end
 
+  def slots
+    @nav_selected_item_id = :slots
+  end
+
+  def serialization
+    @nav_selected_item_id = :serialization
+  end
+
+  def reflexes
+    @nav_selected_item_id = :reflexes
+  end
+
+  def lifecycle_hooks
+    @nav_selected_item_id = :lifecycle_hooks
+  end
+
   def react_integration
     @nav_selected_item_id = :react_integration
   end

@@ -3,7 +3,7 @@
   <Para>
     {"LiveComponent automatically tracks the state of your components. In fact, the key innovation behind LiveComponent is recognizing that a component can be entirely reconstituted from its state independent of the context or surrounding markup."}
   </Para>
-  <H2>Keyword Arguments</H2>
+  <H2>Keyword arguments</H2>
   <Para>
     {"In a framework like React, state is manually tracked via calls to hooks like `useState`. State can also be derived from props, the arguments a component receives from its parent. When props or state changes, React automatically re-renders the component."}
   </Para>
@@ -52,7 +52,7 @@
       JSON
     }
   />
-  <H2>Thinking in Terms of State</H2>
+  <H2>Thinking in terms of state</H2>
   <Para>
     {"Any state the component should \"remember\" between re-renders "}
     <em>must</em>
@@ -63,7 +63,7 @@
     <li><strong>Simplicity</strong>: {"State is specified as regular 'ol arguments to a regular 'ol Ruby class. There's no fancy state objects at play or a specialized API for getting and setting state."}</li>
     <li><strong>Predictability</strong>: {"A component's state always consists of the same key/value pairs, even if some state is optional some of the time."}</li>
   </ol>
-  <H2>Derived State</H2>
+  <H2>Derived state</H2>
   <Para>
     {"All \"rememberable\" state must be represented in the component's keyword arguments, which includes derived state (state computed from other state). While it might be tempting to track derived state using only instance variables, remember that there is no other mechanism for tracking state aside from the initializer. In practice this usually means adding a keyword argument with a default value of `nil`."}
   </Para>

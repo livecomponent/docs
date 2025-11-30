@@ -9,7 +9,7 @@
   <Para>
     {"React components can be rendered in any part of the Rails view layer - including templates, partials, and view components - by rendering an instance of the `LiveComponent::React` component. This special component functions just like a regular 'ol live component by attaching a Stimulus controller and allowing the developer to update the props, etc. When the component re-renders, LiveComponent reuses the existing React root, passing the updated props into the React component."}
   </Para>
-  <H2>Your First React Integration</H2>
+  <H2>Your first React integration</H2>
   <Para>
     {"Let's define a simple React component for demonstration purposes. Note that this component will need to be added to your application's JavaScript build pipeline in some way."}
   </Para>
@@ -58,7 +58,7 @@
       ERB
     }
   />
-  <H2>Updating React Props</H2>
+  <H2>Updating React props</H2>
   <Para>
     {"While `LiveComponent::React` is implemented as a live component, it doesn't offer the ability to attach a custom Stimulus controller the way regular live components do. Updates therefore have to come from a live component wrapper. Normally this isn't too onerous because the wrapper makes the component friendlier to use in Ruby. For example, instead of rendering a `LiveComponent::React`, you might render a `CounterComponent`."}
   </Para>
@@ -115,7 +115,7 @@
       TYPESCRIPT
     }
   />
-  <H2>Putting it all Together</H2>
+  <H2>Putting it all together</H2>
   <Para>
     {"Here's the full example from above, colocated in one place for easier perusal."}
   </Para>

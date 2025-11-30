@@ -1,0 +1,456 @@
+<Primer::Alpha::Stack>
+  <H1>Serialization</H1>
+  <Para>
+    {"LiveComponent automatically serializes and deserializes arguments to components, slots, and reflexes. Serialization is the process of converting Ruby objects to JSON so they can be sent to the front-end. Deserialization is the reverse, i.e. translating JSON data structures into Ruby objects."}
+  </Para>
+  <H2>The built-in serializer</H2>
+  <Para>
+    {"LiveComponent comes out-of-the-box with a serializer that can handle the most common objects you might want to pass from your Rails app into a component. Here's a complete list:"}
+  </Para>
+  <OrderedList>
+    <WithItem>`nil`, `true`, `false`, `Integer`, `Float`, `String`, `Symbol`</WithItem>
+    <WithItem>`ActiveRecord::Base`, i.e. Rails model instances</WithItem>
+    <WithItem>`GlobalID::Identification`</WithItem>
+    <WithItem>`Array`, `Hash`</WithItem>
+    <WithItem>`BigDecimal`</WithItem>
+    <WithItem>`Module`</WithItem>
+    <WithItem>`Range`</WithItem>
+    <WithItem>`Date`, `DateTime`, `Time`</WithItem>
+    <WithItem>`ActiveSupport::TimeWithZone`</WithItem>
+    <WithItem>`ActiveSupport::Duration`</WithItem>
+  </OrderedList>
+  <Para>
+    {"Although serialization usually happens transparently, you can test serializing and deserializing objects with the default serializer by using the following API:"}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        hash = { foo: "bar" }
+        serialized_hash = LiveComponent.serializer.serialize(hash)
+        deserialized_hash = LiveComponent.serializer.deserialize(serialized_hash)
+        deserialized_hash == hash  # returns true
+      RUBY
+    }
+  />
+  <H2>Custom serializers</H2>
+  <Para>
+    {"It is possible to add custom serializers to LiveComponent's default serializer to handle non-standard objects passed to a live component initializer, slot, etc. Keep in mind that custom serializers apply globally. That is to say, they are used to serialize objects of the given type for all live components in your application. To serialize only a particular argument in a particular component, see the section below regarding per-component serializers."}
+  </Para>
+  <Para>
+    {"Let's take a look at the range serializer that comes with LiveComponent, which is implemented internally using the custom serializers API. All serializers must implement two methods: `object_to_hash` for serializing a Ruby object into a hash, and `hash_to_object` for deserializing a hash into a Ruby object."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class RangeSerializer < LiveComponent::ObjectSerializer
+          private
+
+          def object_to_hash(range)
+            {
+              "begin" => LiveComponent.serializer.serialize(range.begin),
+              "end" => LiveComponent.serializer.serialize(range.end),
+              "exclude_end" => range.exclude_end?,
+            }
+          end
+
+          def hash_to_object(hash)
+            Range.new(
+              *LiveComponent.serializer.deserialize(
+                [hash["begin"], hash["end"]]
+              ),
+
+              hash["exclude_end"]
+            )
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Notice that the `object_to_hash` method serializes its constituent parts via `LiveComponent.serializer.serialize`. This is because Ruby range objects can hold multiple types of object, like strings and integers."}
+  </Para>
+  <Para>
+    {"Also notice that there is no mention of the `Range` or serializer classes in the resulting hash. This information is added automatically by `ObjectSerializer`."}
+  </Para>
+  <Para>
+    {"Once you've defined your custom serializer, register it with the default serializer. The first argument is the type of object to serialize, and the second is the serializer class. Serializers work by looking up the right serializer from the given object's class."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        LiveComponent.serializer.register(Range, RangeSerializer)
+      RUBY
+    }
+  />
+  <Para>
+    {"Now, passing a Range object to the default serializer will invoke our custom `RangeSerializer`:"}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        LiveComponent.serializer.serialize(1..2)
+        # returns {"_lc_ser" => "Range", "begin" => 1, "end" => 2, "exclude_end" => false}
+      RUBY
+    }
+  />
+  <H2>Per-component serializers</H2>
+  <Para>
+    {"In addition to the global default serializer, LiveComponent allows serializing individual initializer arguments, or \"props.\" This can be useful in cases where special arg handling is desired, or where it's necessary to supply component- or attribute-specific serialization options."}
+  </Para>
+  <Para>
+    {"Per-component serializers are specified via the `serialize` class method. As an example, let's look at a component that serializes a boolean argument to 't' or 'f'."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class BooleanSerializer < LiveComponent::ObjectSerializer
+          private
+
+          def object_to_hash(object)
+            { "value" => object ? "t" : "f" }
+          end
+
+          def hash_to_object(hash)
+            hash["value"] == "t"
+          end
+        end
+
+        LiveComponent.register_prop_serializer(:boolean_serializer, BooleanSerializer)
+
+        class ExampleComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          serializes :example_arg, with: :boolean_serializer
+
+          def initialize(example_arg: false)
+            @example_arg = example_arg
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Note that any component-specific serializer takes precedence over any serializer configured globally via the default serializer."}
+  </Para>
+  <H2>The model serializer</H2>
+  <Para>
+    {"The default serializer is capable of handling ActiveRecord model objects, meaning it's possible to pass ActiveRecord objects into your component's initializers, slots, etc. No additional configuration is necessary."}
+  </Para>
+  <Para>
+    {"By default, all model attributes are serialized and sent to the front-end. Since this behavior isn't always desirable, it is also possible to configure which fields are serialized."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class ExampleComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          # serializes only the foo and bar attributes
+          serializes :model_object, with: :model_serializer, attributes: [:foo, :bar]
+
+          # serializes all attributes (the default)
+          serializes :model_object, with: :model_serializer, attributes: true
+
+          # serializes no attributes
+          serializes :model_object, with: :model_serializer, attributes: false
+
+          def initialize(model_object:)
+            @model_object = model_object
+          end
+        end
+      RUBY
+    }
+  />
+  <H3>Signing model objects</H3>
+  <Para>
+    {"By default, the model serializer signs model objects using Rails' built-in Global ID mechanism. This ensures clients cannot fetch arbitrary records from the database by manipulating the ID stored in the serialized model object that is sent to the front-end. When the model object is sent back to Rails, the signature is verified and the request is failed if the signature is determined to be invalid."}
+  </Para>
+  <Para>
+    {"To disable model signing per-attribute, pass the `sign: false` option:"}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class ExampleComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          serializes :model_object, with: :model_serializer, sign: false
+
+          def initialize(model_object:)
+            @model_object = model_object
+          end
+        end
+      RUBY
+    }
+  />
+  <H3>Reloading model objects</H3>
+  <Para>
+    {"Generally speaking, Rails developers should avoid making database queries in the view layer. In accordance with this, LiveComponent's model serializer does not automatically re-fetch records from the database when deserializing model objects."}
+  </Para>
+  <Para>
+    {"To opt into such behavior, pass the `reload: true` option:"}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class ExampleComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          serializes :model_object, with: :model_serializer, reload: true
+
+          def initialize(model_object:)
+            @model_object = model_object
+          end
+        end
+      RUBY
+    }
+  />
+  <H3>Record proxies</H3>
+  <Para>
+    {"To prevent overfetching, the model serializer does not deserialize model objects into ActiveRecord objects (unless the `reload: true` option is provided). Instead it returns instances of `LiveComponent::RecordProxy`, a wrapper class that behaves similarly to ActiveRecord model classes."}
+  </Para>
+  <Para>
+    {"Record proxies allow access to the record's id, global id, and serialized attributes without reloading. Accessing non-serialized attributes or calling non-attribute methods however will cause the proxy to automatically fetch the record from the database. For this reason, please exercise caution when calling model methods. Remember that any database activity will negatively impact render performance."}
+  </Para>
+  <H2>Inline serializers</H2>
+  <Para>
+    {"If you don't need to re-use a serializer, or in cases where it's more convenient, LiveComponent supports defining serializers inline. Inline serializers function per-attribute and are defined using the same `serialize` class method. Let's translate our boolean example from earlier."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class ExampleComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          serializes :example_arg do |serializer|
+            serializer.serialize do |object|
+              { "value" => object ? "t" : "f" }
+            end
+
+            serializer.deserialize do |hash|
+              hash["value"] == "t"
+            end
+          end
+
+          def initialize(example_arg: false)
+            @example_arg = example_arg
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"The `serialize` method accepts a block and yields a builder object. Call `serialize` and `deserialize` on this object to define behavior."}
+  </Para>
+  <H2>Ruby types in JavaScript</H2>
+  <Para>
+    {"Some Ruby types do not have exact JavaScript equivalents, and are approximated by JavaScript objects when serialized. LiveComponent exports a series of TypeScript types and helper functions that are designed to help access the data contained within these approximations."}
+  </Para>
+  <H3>Symbols</H3>
+  <Para>
+    {"In JavaScript, Ruby symbols have the following type signature:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        type RubySymbol = {
+          value: string;
+          _lc_sym: true;
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"To create a symbol in JavaScript, create an object manually using this type signature, or call the `make_symbol` function."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { type RubySymbol, Ruby } from "@camertron/live-component";
+
+        // these are equivalent
+        const sym1: RubySymbol = { _lc_sym: true, value: "foo" };
+        const sym2 = Ruby.make_symbol("foo");
+      TYPESCRIPT
+    }
+  />
+  <H3>Record proxies</H3>
+  <Para>
+    {"Record proxies (i.e. ActiveRecord model objects) have the following type signature:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        type RecordProxy<T> = {
+          _lc_ar: {
+            gid: string;      // the record's global ID
+            signed: boolean;  // whether or not the global ID is cryptographically signed
+          }
+        } & T
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Note that the `RecordProxy` type accepts a generic type parameter, which allows you to define a type for the attributes in your ActiveRecord model, eg:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { type RecordProxy, live, LiveController } from "@camertron/live-component";
+
+        export type TodoItem = RecordProxy<{
+          name: string;
+        }>
+
+        export type TodoItemComponentProps = {
+          todo_item: TodoItem;
+          // ...etc
+        }
+
+        @live("TodoItemComponent")
+        export class TodoItemComponent extends LiveComponent<TodoItemComponentProps> {
+          // ...etc
+        }
+      TYPESCRIPT
+    }
+  />
+  <H3>Hashes</H3>
+  <Para>
+    {"LiveComponent supports several \"flavors\" of Ruby hash: regular 'ol `Hash`, a symbol-keyed `Hash`, and ActiveSupport's `HashWithIndifferentAccess`. These are all represented with their own type signatures:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        export type RubyHash<T extends Record<string, any>> = {
+          _lc_symkeys: Array<string>;
+        } & T
+
+        export type RubySymbolHash<T extends Record<string, any>> = {
+          _lc_symhash: true
+        } & T
+
+        export type RubyHashWithIndifferentAccess<T extends Record<string, any>> = RubyHash<T> & {
+          _lc_hwia: true;
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Although you can create hash instances yourself using the type signatures above, LiveComponent exports several helper methods for convenience:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import {
+          type RubyHash,
+          type RubySymbolHash,
+          type RubyHashWithIndifferentAccess,
+          Ruby
+        } from "@camertron/live-component";
+
+        // these are equivalent
+        const hash1: RubyHash = { _lc_symkeys: [] };
+        const hash2 = Ruby.make_hash();
+
+        // these are equivalent
+        const hash1: RubySymbolHash = { _lc_symhash: true };
+        const hash2 = Ruby.make_symbol_hash();
+
+        // these are equivalent
+        const hash1: RubyHashWithIndifferentAccess = { _lc_symkeys: [], _lc_hwia: true };
+        const hash2 = Ruby.make_hash_with_indifferent_access();
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"LiveComponent records which keys are symbols by adding them to the `_lc_symkeys` array. You can maintain the entries in this array yourself when manipulating hash data, or you can use the convenience methods described below."}
+  </Para>
+  <H4>Set</H4>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { Ruby } from "@camertron/live-component";
+
+        const hash = Ruby.make_hash();
+
+        // set a value of "bar" at (string) key "foo"
+        Ruby.hash_set(hash, "foo", "bar");
+
+        // set a value of "bar" at (symbol) key "foo"
+        // these two are equivalent
+        Ruby.hash_set(hash, Ruby.make_symbol("foo"), "bar");
+        Ruby.hash_set_symbol(hash, "foo", "bar");
+      TYPESCRIPT
+    }
+  />
+  <H4>Get</H4>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { Ruby } from "@camertron/live-component";
+
+        const hash = Ruby.make_hash();
+        Ruby.hash_set_symbol(hash, "foo", "bar");
+
+        // returns undefined
+        Ruby.hash_get(hash, "foo");
+
+        // returns "bar"
+        Ruby.hash_get_symbol(hash, "foo");
+      TYPESCRIPT
+    }
+  />
+  <H4>Delete</H4>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { Ruby } from "@camertron/live-component";
+
+        const hash = Ruby.make_hash();
+        Ruby.hash_set_symbol(hash, "foo", "bar");
+
+        // returns undefined, does nothing
+        Ruby.hash_delete(hash, "foo");
+
+        // returns "bar", deletes "foo" from the hash
+        Ruby.hash_delete_symbol(hash, "foo");
+      TYPESCRIPT
+    }
+  />
+  <H4>Conversions</H4>
+  <Para>
+    {"Several convenience methods exist for converting JavaScript objects to Ruby hashes."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { Ruby } from "@camertron/live-component";
+
+        // returns a hash where all keys are strings
+        Ruby.object_to_hash({ foo: "bar" });
+
+        // returns a hash where all keys are symbols
+        Ruby.object_to_symbol_hash({ foo: "bar" });
+      TYPESCRIPT
+    }
+  />
+</Primer::Alpha::Stack>

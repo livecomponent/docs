@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+class OrderedList < ApplicationComponent
+  renders_many :items
+
+  def initialize(**system_arguments)
+    @system_arguments = system_arguments
+  end
+
+  def call
+    <Primer::BaseComponent tag={:ol} ml={4} {**@system_arguments}>
+      {items.map do |item|
+        <li>
+          <TextBlock>{item}</TextBlock>
+        </li>
+      end}
+    </Primer::BaseComponent>
+  end
+end

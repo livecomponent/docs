@@ -1,0 +1,76 @@
+<Primer::Alpha::Stack>
+  <H1>Reflexes</H1>
+  <Para>
+    {"In addition to setting props and slots, LiveComponent allows calling methods on components from the front-end. The library borrows a term from Stimulus Reflex and names these method calls \"reflexes.\""}
+  </Para>
+  <H2>Calling a component method (reflex)</H2>
+  <Para>
+    {"Reflexes are really no different than slot methods, but they use a slightly different syntax. Let's take a look at an example component."}
+  </Para>
+  <CodeBlock
+    language={:ruby}
+    code={
+      <<~RUBY
+        class UpcaseComponent < ApplicationComponent
+          include LiveComponent::Base
+
+          def initialize(value:)
+            @value = value
+          end
+
+          def upcase(silly: false)
+            @value.upcase!
+            @value << "😛" if silly
+          end
+        end
+      RUBY
+    }
+  />
+  <Para>
+    {"Rather than set the `value` attribute in JavaScript, we can call the `upcase` method instead and leave the logic on the server. Here's the corresponding controller:"}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("UpcaseComponent")
+        export class UpcaseComponent extends LiveController {
+          // wired to a button or something via data-action attribute (not shown)
+          on_click() {
+            this.render((component) => {
+              component.call("upcase");
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Reflexes can also accept keyword arguments, which are passed as the second argument to the `call` method."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("UpcaseComponent")
+        export class UpcaseComponent extends LiveController {
+          // wired to a button or something via data-action attribute (not shown)
+          on_click() {
+            this.render((component) => {
+              component.call("upcase", { silly: true });
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Note that reflex arguments use the same serialization and deserialization mechanism as component and slot arguments. See the section on "}
+    <Rails::LinkTo url={serialization_path} label="serialization" />
+    {" for more information."}
+  </Para>
+</Primer::Alpha::Stack>
