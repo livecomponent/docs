@@ -1,7 +1,44 @@
 <Primer::Alpha::Stack>
   <H1>Lifecycle Hooks</H1>
   <Para>
-    {""}
+    {"When live components re-render, the framework calls several lifecycle hooks methods that can be defined by the host application to customize render behavior."}
   </Para>
-  <H2>Secondary header</H2>
+  <H2>The `before_update` hook</H2>
+  <Para>
+    {"The `before_update` hook is called immediately before a component renders or re-renders and receives the current state as an argument."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController, type State } from "@camertron/live-component";
+
+        @live("ExampleComponent")
+        export class ExampleComponent extends LiveComponent {
+          before_update(state: State) {
+            // your code here
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <H2>The `after_update` hook</H2>
+  <Para>
+    {"The `after_update` hook is called after a component renders or re-renders and receives no arguments."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController, type State } from "@camertron/live-component";
+
+        @live("ExampleComponent")
+        export class ExampleComponent extends LiveComponent {
+          after_update() {
+            // your code here
+          }
+        }
+      TYPESCRIPT
+    }
+  />
 </Primer::Alpha::Stack>

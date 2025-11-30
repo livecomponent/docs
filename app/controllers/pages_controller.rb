@@ -50,6 +50,10 @@ class PagesController < ApplicationController
     @nav_selected_item_id = :reflexes
   end
 
+  def stimulus_helpers
+    @nav_selected_item_id = :stimulus_helpers
+  end
+
   def lifecycle_hooks
     @nav_selected_item_id = :lifecycle_hooks
   end

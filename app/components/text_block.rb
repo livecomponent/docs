@@ -18,7 +18,7 @@ class TextBlock < ApplicationComponent
   def rendered_content
     content
       .gsub(/`([^`]+)`/) do
-        Code.new.with_content($1).render_in(view_context)
+        Code.new.with_content($1.html_safe).render_in(view_context)
       end
       .html_safe
   end

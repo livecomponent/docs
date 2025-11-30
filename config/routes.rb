@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get "/slots", to: "pages#slots", as: :slots
   get "/serialization", to: "pages#serialization", as: :serialization
   get "/reflexes", to: "pages#reflexes", as: :reflexes
+  get "/stimulus-helpers", to: "pages#stimulus_helpers", as: :stimulus_helpers
   get "/lifecycle-hooks", to: "pages#lifecycle_hooks", as: :lifecycle_hooks
   get "/react-integration", to: "pages#react_integration", as: :react_integration
 
