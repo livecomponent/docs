@@ -22,27 +22,6 @@
   <Para>
     {"In the example above, clicking the button will call a method named `my_click_handler` on the associated live controller. LiveComponent will transform the returned `LiveComponent::Action` into a hash of data attributes, which will then be passed into the component. The `ButtonComponent` must handle emitting the data attributes into the rendered HTML."}
   </Para>
-  <Para>
-    {"Here's how the component might accept and emit the data attributes using Rails' `content_tag` helper:"}
-  </Para>
-  <CodeBlock
-    language={:ruby}
-    code={
-      <<~RUBY
-        class ButtonComponent < ApplicationComponent
-          def initialize(data:)
-            @data = data
-          end
-
-          def call
-            content_tag(:button, data: @data) do
-              content
-            end
-          end
-        end
-      RUBY
-    }
-  />
   <H2>Target attributes</H2>
   <Para>
     {"Stimulus target attributes generally take the form `data-controller-target=\"name\"`, where \"controller\" is the name of the associated live controller. Use LiveComponent's `target` method to attach a data attribute with a friendlier syntax:"}
@@ -56,7 +35,7 @@
     }
   />
   <Para>
-    {"In the example above, the button will be passed a `data:` hash with a `\"data-buttoncomponent-target\" => \"submit_button\"` pair. The `ButtonComponent` must handle emitting the data attributes into the rendered HTML."}
+    {"In the example above, the button will be passed a hash with a `\"data-buttoncomponent-target\" => \"submit_button\"` pair. The `ButtonComponent` must handle emitting the data attributes into the rendered HTML."}
   </Para>
   <Para>
     {"See the action documentation above for an example of how to emit data attributes."}
