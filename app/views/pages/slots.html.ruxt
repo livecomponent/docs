@@ -1,9 +1,82 @@
 <Primer::Alpha::Stack>
   <H1>Slots</H1>
   <Para>
-    {""}
+    {"LiveComponent supports adding (and removing) slots via an interface that mirrors ViewComponent's slots API."}
   </Para>
-  <H2>Secondary header</H2>
+  <H2>Adding slots</H2>
+  <Para>
+    {"Slots can be added using the `with` method when components are re-rendered."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("TodoListComponent")
+        export class TodoListComponent extends LiveController {
+          add_item(label: string) {
+            this.render((component) => {
+              component.with("item", { label })
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <H2>Removing slots</H2>
+  <Para>
+    {"Slots are stored as an array of objects. Removing them can be done by manipulating the array."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        @live("TodoListComponent")
+        export class TodoListComponent extends LiveController {
+          remove_first_item() {
+            this.render((component) => {
+              delete component.slots["item"][0]
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <H2>Slots in TypeScript</H2>
+  <Para>
+    {"Slot types can be specified by passing a second type parameter to `LiveController`."}
+  </Para>
+  <CodeBlock
+    language={:ts}
+    code={
+      <<~TYPESCRIPT
+        import { live, LiveController } from "@camertron/live-component";
+
+        type TodoListComponentProps = {
+          name: string;
+        }
+
+        type TodoListComponentSlots = {
+          item: { label: string };
+        }
+
+        @live("TodoListComponent")
+        export class TodoListComponent extends LiveController<TodoListComponentProps, TodoListComponentSlots> {
+          add_item(label: string) {
+            this.render((component) => {
+              component.with("item", { label })
+            });
+          }
+        }
+      TYPESCRIPT
+    }
+  />
+  <Para>
+    {"Now, attempting to call `with` with a slot name that's not defined in `TodoListComponentSlots` or with invalid arguments will result in a TypeScript error."}
+  </Para>
   <FooterNav>
     <WithForwardLink href={reflexes_path} label="Reflexes" />
     <WithBackwardLink href={state_tracking_path} label="State tracking" />

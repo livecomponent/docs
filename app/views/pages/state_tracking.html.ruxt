@@ -18,8 +18,12 @@
       <<~TYPESCRIPT
         import { live, LiveController } from "@camertron/live-component";
 
+        type TodoItemComponentProps = {
+          editing: boolean;
+        }
+
         @live("TodoItemComponent") // this is the Ruby class name
-        export class TodoItemComponent extends LiveController {
+        export class TodoItemComponent extends LiveController<TodoItemComponentProps> {
           edit() {
             this.render((component) => {
               component.props.editing = true;
