@@ -68,7 +68,7 @@ gem "rux", "~> 1.3"
 gem "rux-rails", "~> 2.0"
 gem "onload", "~> 1.1"
 gem "vite_rails", "~> 3.0"
-gem "primer_view_components", "~> 0.44"
+gem "primer_view_components", "~> 0.47"
 gem "rouge", "~> 4.6"
 
 gem "parklife-rails"
