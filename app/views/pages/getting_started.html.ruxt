@@ -27,7 +27,18 @@
     language={:shell}
     code="bundle add live_component"
   />
+  <H2>Run the Rails Generator</H2>
+  <Para>
+    {"LiveComponent comes with a handy Rails generator that can bootstrap your application so you can start writing LiveComponents right away. The generator automates the remaining steps in this guide. You can choose to either run it or integrate LiveComponent manually by continuing on to the next step."}
+  </Para>
+  <CodeBlock
+    language={:shell}
+    code="bin/rails generate live_component:install"
+  />
   <H2>Install JavaScript package</H2>
+  <Primer::Alpha::Banner scheme={:warning}>
+    {"Note that the rest of this guide assumes you have not run the Rails generator described above. If you chose to run the generator, you may skip the rest of the steps below."}
+  </Primer::Alpha::Banner>
   <Para>
     {"Next, install the JavaScript package using your package manager of choice. Add it to your package.json file, eg:"}
   </Para>
@@ -60,32 +71,14 @@
     {"One of the ways LiveComponent achieves good performance is by avoiding a significant amount of Rails overhead. It does so by inserting Rack middleware at the very beginning of the middleware stack."}
   </Para>
   <Para>
-    {"In config.ru, require the LiveComponent gem and add the middleware. Your config.ru should look very similar to this:"}
+    {"Add an initializer at config/initializers/live_component.rb that requires the LiveComponent gem and adds the middleware:"}
   </Para>
   <CodeBlock
     code={
       <<~RUBY
-        require_relative "config/environment"
-        require "live_component/middleware"  # <-- add this line
+        require "live_component"
 
-        use LiveComponent::Middleware  # <-- add this line
-        run Rails.application
-
-        Rails.application.load_server
-      RUBY
-    }
-  />
-  <Para>
-    {"Middleware can also be inserted in application.rb if you'd rather not modify config.ru (note that most of the code usually present inside application.rb has been omitted for brevity):"}
-  </Para>
-  <CodeBlock
-    code={
-      <<~RUBY
-        module MyRailsApp
-          class Application < Rails::Application
-            config.middleware.insert_before 0, LiveComponent::Middleware
-          end
-        end
+        Rails.application.config.middleware.insert_before(0, LiveComponent::Middleware)
       RUBY
     }
   />
