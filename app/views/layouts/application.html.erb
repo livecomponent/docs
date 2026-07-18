@@ -30,7 +30,15 @@
     <div class="border-bottom color-border-default">
       <%= render(Primer::Alpha::Stack.new(align: :center, justify: :space_between, direction: :horizontal, pl: 3, pr: 3, classes: "container-xl", style: "height: 75px")) do %>
         <%= render(Logo.new(style: "width: 250px")) %>
-        <%= render(ColorModeToggle.new) %>
+        <%= render(Primer::Alpha::Stack.new(direction: :horizontal, align: :center)) do %>
+          <%= render(Primer::Beta::Link.new(font_size: 4, href: "https://github.com/livecomponent/livecomponent", scheme: :primary, target: "_blank")) do %>
+            <%= render(Primer::Alpha::Stack.new(direction: :horizontal, align: :center)) do %>
+              Contribute
+              <%= render(Primer::Beta::Octicon.new(:"mark-github", size: :medium, mr: 5)) %>
+            <% end %>
+          <% end %>
+          <%= render(ColorModeToggle.new) %>
+        <% end %>
       <% end %>
     </div>
     <%= render(Primer::Alpha::Layout.new(classes: "container-xl mt-3")) do |layout| %>
